@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL_NON_POOLING")
+}
+
+// Model untuk tabel TPS
+model TPS {
+  id_tps      Int           @id @default(autoincrement()) // id_tps dengan auto increment
+  nama_tps    String        // nama_tps
+  lokasi      String        // lokasi
+  kecamatan   String        // kecamatan
+  desa        String        // desa
+  total_dpt   Int           // total_dpt
+  // Relasi dengan DataPerhitungan dan Saksi_TPS
+  dataPerhitungan DataPerhitungan[]
+  saksiTPS       Saksi_TPS[]
+}
+
+// Model untuk tabel Saksi
+model Saksi {
+  id_saksi     Int           @id @default(autoincrement()) // id_saksi dengan auto increment
+  nama_saksi   String        // nama_saksi
+  nomor_wa     String        // nomor_wa
+  token        String        // token
+  status_input Boolean       // status_input
+  // Relasi dengan DataPerhitungan dan Saksi_TPS
+  dataPerhitungan DataPerhitungan[]
+  saksiTPS       Saksi_TPS[]
+}
+
+// Model untuk tabel DataPerhitungan
+model DataPerhitungan {
+  id_perhitungan     Int       @id @default(autoincrement()) // id_perhitungan dengan auto increment
+  id_saksi           Int       // id_saksi, foreign key
+  id_tps             Int       // id_tps, foreign key
+  suara_bupati_1     Int       // suara_bupati_1
+  suara_bupati_2     Int       // suara_bupati_2
+  suara_gubernur_1   Int       // suara_gubernur_1
+  suara_gubernur_2   Int       // suara_gubernur_2
+  suara_tidak_sah_bupati Int    // suara_tidak_sah_bupati
+  suara_tidak_sah_gubernur Int // suara_tidak_sah_gubernur
+  tgl_input          DateTime  // tgl_input
+  total_suara_masuk Int       // total_suara_masuk
+  // Relasi dengan Saksi dan TPS
+  saksi              Saksi     @relation(fields: [id_saksi], references: [id_saksi])
+  tps                TPS       @relation(fields: [id_tps], references: [id_tps])
+  // Relasi dengan BuktiGambar
+  buktiGambar       BuktiGambar[]
+}
+
+// Model untuk tabel BuktiGambar
+model BuktiGambar {
+  id_gambar    Int            @id @default(autoincrement()) // id_gambar dengan auto increment
+  id_perhitungan Int         // id_perhitungan, foreign key
+  file_path    String         // file_path untuk menyimpan path gambar
+  // Relasi dengan DataPerhitungan
+  perhitungan  DataPerhitungan @relation(fields: [id_perhitungan], references: [id_perhitungan])
+}
+
+// Model untuk tabel Saksi_TPS (relasi banyak-ke-banyak antara Saksi dan TPS)
+model Saksi_TPS {
+  id_saksi     Int        // id_saksi, foreign key
+  id_tps       Int        // id_tps, foreign key
+  status_input Boolean    // status_input
+  // Relasi dengan Saksi dan TPS
+  saksi        Saksi      @relation(fields: [id_saksi], references: [id_saksi])
+  tps          TPS        @relation(fields: [id_tps], references: [id_tps])
+
+  @@id([id_saksi, id_tps]) // Menentukan kombinasi primary key
+}
