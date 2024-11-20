@@ -5,7 +5,7 @@ import { kecamatan } from "../../lib/masterData";
 
 const SEMUA_KECAMATAN = "SEMUA KECAMATAN"
 
-export const fetchTpsData = async () => {
+const fetchTpsData = async () => {
   const apiUrl = `/api/admin/tps`;
   console.log(apiUrl)
   const res = await fetch(apiUrl, {
