@@ -1,47 +1,98 @@
 "use client"
-import { Grid, Select, GridCol } from "@mantine/core";
+import { Grid, Select, GridCol, TableTr, TableTd, Table, TableTbody, TableThead, TableScrollContainer, TableTh, Space, Box, LoadingOverlay, Button, Group, Text } from "@mantine/core";
 import React, { useEffect, useState } from "react";
 import { kecamatan } from "../../lib/masterData";
+import { useMediaQuery } from "@mantine/hooks";
+import { IconEdit, IconX } from "@tabler/icons-react";
+import { modals } from '@mantine/modals'
+import { deleteTPS, fetchTpsData } from "../../lib/crud/tps";
+import { useRouter } from "next/navigation";
 
 const SEMUA_KECAMATAN = "SEMUA KECAMATAN"
 
-const fetchTpsData = async () => {
-  const apiUrl = `/api/admin/tps`;
-  console.log(apiUrl)
-  const res = await fetch(apiUrl, {
-    method: 'GET'
-  });
-  
-  if (!res.ok) {
-    throw new Error('Failed to fetch TPS data');
-  }
-
-  const tpsByKecamatan = await res.json();
-  return tpsByKecamatan;
-};
+const hanleEditTps = (id: number) => {
+  window.location.href = `/admin/tps/edit/${id}`
+}
 
 export default function TPSPage() {
   const [selectedKec, setSelectedKec] = useState<string | null>(SEMUA_KECAMATAN);
   const [dataTps, setDataTps] = useState<any[]>([]);
-
-
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const isLg = useMediaQuery('(min-width: 1200px)');
+  const router = useRouter()
   const semuaTps = Object.values(dataTps).flat();
 
   const filterTps = () => {
-    if(selectedKec === SEMUA_KECAMATAN){
+    if (selectedKec === SEMUA_KECAMATAN) {
       return semuaTps
     }
     return dataTps.filter((tps) => tps.kecamatan.toLowerCase() === selectedKec?.toLowerCase())
   }
 
-  console.log(filterTps())
+  const filteredTps = filterTps();
 
+  const confirmModal = (id: number) => modals.openConfirmModal({
+    title: 'Hapus data TPS',
+    children: (
+      <Text size="sm">
+        Data yang yang dihapus tidak dapat dikembalikan
+      </Text>
+    ),
+    labels: { confirm: 'OK', cancel: 'Batal' },
+    onConfirm: () => handleDeleteTPS(id),
+  });
+
+  const handleDeleteTPS = async(id: number) => {
+    setIsLoading(true)
+    try {
+      await deleteTPS(id)
+    } catch (error) {
+      console.log("Gagal menghapus data TPS")
+    } finally {
+      setIsLoading(false)
+      router.refresh()
+    }
+  } 
+
+  const rows = filteredTps.map((tps) => (
+    <TableTr key={tps.id_tps} >
+      <TableTd>{tps.nama_tps}</TableTd>
+      <TableTd>{tps.lokasi}</TableTd>
+      <TableTd>{tps.kecamatan}</TableTd>
+      <TableTd>{tps.total_dpt}</TableTd>
+      <TableTd>
+        <Group>
+          <Button 
+            size="compact-md" 
+            leftSection={<IconEdit size={14} />} 
+            variant="outline"
+            onClick={() => hanleEditTps(tps.id_tps)}
+          >
+            Edit
+          </Button>
+          <Button 
+            size="compact-md" 
+            onClick={() => confirmModal(tps.id_tps)} 
+            color="red" 
+            leftSection={
+              <IconX size={14} />
+            } 
+            variant="outline">
+            Hapus
+          </Button>
+        </Group>
+      </TableTd>
+
+    </TableTr>
+  ))
   // Gunakan useEffect untuk mengambil data hanya sekali saat komponen dimuat
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true)
       try {
         const tps = await fetchTpsData();
         setDataTps(tps);
+        setIsLoading(false)
       } catch (error) {
         console.error('Error fetching TPS data:', error);
       }
@@ -52,19 +103,42 @@ export default function TPSPage() {
   return (
     <>
       <h1>Data TPS</h1>
-      <Grid justify="start">
-        <GridCol span={{ base: 12, md: 6, lg: 6 }}>
-          <Select
-            searchable
-            clearable
-            label="Pilih Kecamatan"
-            placeholder="Pilih Kecamatan"
-            value={selectedKec}
-            onChange={(val) => setSelectedKec(val)}
-            data={[SEMUA_KECAMATAN, ...kecamatan.map((kec) => kec.kecamatan)]}
-          />
-        </GridCol>
-      </Grid>
+      <Box pos="relative">
+        <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
+
+        <Grid justify="start">
+          <GridCol span={{ base: 12, md: 6, lg: 6 }}>
+            <Select
+              searchable
+              clearable
+              label="Pilih Kecamatan"
+              placeholder="Pilih Kecamatan"
+              value={selectedKec}
+              onChange={(val) => setSelectedKec(val)}
+              data={[SEMUA_KECAMATAN, ...kecamatan.map((kec) => kec.kecamatan)]}
+            />
+          </GridCol>
+        </Grid>
+        <Space h={'lg'} />
+        <Grid justify="start">
+          <GridCol span={{ base: 12, md: 12, lg: 8 }}>
+            <TableScrollContainer minWidth={isLg ? '75%' : '100%'} type="native">
+              <Table>
+                <TableThead>
+                  <TableTr>
+                    <TableTh>Nama TPS</TableTh>
+                    <TableTh>Lokasi</TableTh>
+                    <TableTh>Kecamatan</TableTh>
+                    <TableTh>Total DPT</TableTh>
+                    <TableTh></TableTh>
+                  </TableTr>
+                </TableThead>
+                <TableTbody>{rows}</TableTbody>
+              </Table>
+            </TableScrollContainer>
+          </GridCol>
+        </Grid>
+      </Box>
     </>
   );
 }

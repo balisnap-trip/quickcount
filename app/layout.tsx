@@ -8,6 +8,7 @@ import { theme } from "../theme";
 import { Navbar } from "./components";
 import '../public/styles/global.css';
 import { SessionProvider } from "next-auth/react";
+import { ModalsProvider } from "@mantine/modals";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -23,7 +24,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <SessionProvider>
           <MantineProvider theme={theme}>
-            <Navbar>{children}</Navbar>
+            <ModalsProvider>
+              <Navbar>{children}</Navbar>
+            </ModalsProvider>
           </MantineProvider>
         </SessionProvider>
       </body>
