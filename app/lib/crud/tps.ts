@@ -1,8 +1,11 @@
 const apiUrl = `/api/admin/tps`;
 
-export const fetchTpsData = async () => {
+export const fetchTpsData = async (page: number, filter: {kec: string | null, query: string | null}) => {
+  const perPage = 20
+  const params = {page, perPage, filter}
   const res = await fetch(apiUrl, {
-    method: 'GET'
+    method: 'POST',
+    body: JSON.stringify(params)
   });
 
   if (!res.ok) {

@@ -1,8 +1,12 @@
+'use client'
+import { useRouter } from "next/navigation"
+import { useEffect } from "react"
+
 // app/admin/page.tsx
 export default function AdminPage() {
-  return (
-    <div className="t-5">
-      <p>This is the admin dashboard. This is the admin dashboard. This is the admin dashboard.</p>
-    </div>
-  );
+  const router = useRouter()
+  useEffect(() => {
+    router.push('/dashboard')
+  }, [router])
+  return null
 }
