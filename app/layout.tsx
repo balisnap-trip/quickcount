@@ -14,6 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <title>Hitung Cepat Pemilihan Calon Bupati Gianyar 2024</title>
         <ColorSchemeScript />
         <link rel="shortcut icon" href="/favicon.svg" />
         <meta
@@ -23,7 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <SessionProvider>
-          <MantineProvider theme={theme}>
+          <MantineProvider withGlobalClasses withCssVariables withStaticClasses theme={theme}>
             <ModalsProvider>
               <Navbar>{children}</Navbar>
             </ModalsProvider>

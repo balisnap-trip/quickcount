@@ -30,11 +30,11 @@ model TPS {
 model Saksi {
   id_saksi     Int           @id @default(autoincrement()) // id_saksi dengan auto increment
   nama_saksi   String        // nama_saksi
-  nomor_wa     String        // nomor_wa
-  token        String        // token
-  status_input Boolean       // status_input
+  nomor_wa     String?       // Menjadikan nomor_wa nullable
+  token        String?       // Menjadikan token nullable
+  status_input Boolean       @default(false) // Set default untuk status_input menjadi false
   // Relasi dengan DataPerhitungan dan Saksi_TPS
-  dataPerhitungan DataPerhitungan[]
+  dataPerhitungan DataPerhitungan[] 
   saksiTPS       Saksi_TPS[]
 }
 
@@ -52,8 +52,8 @@ model DataPerhitungan {
   tgl_input          DateTime  // tgl_input
   total_suara_masuk Int       // total_suara_masuk
   // Relasi dengan Saksi dan TPS
-  saksi              Saksi     @relation(fields: [id_saksi], references: [id_saksi])
-  tps                TPS       @relation(fields: [id_tps], references: [id_tps])
+  saksi              Saksi     @relation(fields: [id_saksi], references: [id_saksi], onDelete: Cascade)
+  tps                TPS       @relation(fields: [id_tps], references: [id_tps], onDelete: Cascade)
   // Relasi dengan BuktiGambar
   buktiGambar       BuktiGambar[]
 }
@@ -73,8 +73,8 @@ model Saksi_TPS {
   id_tps       Int        // id_tps, foreign key
   status_input Boolean    // status_input
   // Relasi dengan Saksi dan TPS
-  saksi        Saksi      @relation(fields: [id_saksi], references: [id_saksi])
-  tps          TPS        @relation(fields: [id_tps], references: [id_tps])
+  saksi        Saksi      @relation(fields: [id_saksi], references: [id_saksi], onDelete: Cascade)
+  tps          TPS        @relation(fields: [id_tps], references: [id_tps], onDelete: Cascade)
 
   @@id([id_saksi, id_tps]) // Menentukan kombinasi primary key
 }

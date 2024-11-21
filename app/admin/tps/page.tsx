@@ -1,5 +1,5 @@
 "use client"
-import { Grid, Select, GridCol, TableTr, TableTd, Table, TableTbody, TableThead, TableScrollContainer, TableTh, Space, Box, LoadingOverlay, Button, Group, Text } from "@mantine/core";
+import { Grid, Select, GridCol, TableTr, TableTd, Table, TableTbody, TableThead, TableScrollContainer, TableTh, Space, Box, LoadingOverlay, Button, Group, Text, TextInput, Pagination } from "@mantine/core";
 import React, { useEffect, useState } from "react";
 import { kecamatan } from "../../lib/masterData";
 import { useMediaQuery } from "@mantine/hooks";
@@ -20,16 +20,10 @@ export default function TPSPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const isLg = useMediaQuery('(min-width: 1200px)');
   const router = useRouter()
-  const semuaTps = Object.values(dataTps).flat();
-
-  const filterTps = () => {
-    if (selectedKec === SEMUA_KECAMATAN) {
-      return semuaTps
-    }
-    return dataTps.filter((tps) => tps.kecamatan.toLowerCase() === selectedKec?.toLowerCase())
-  }
-
-  const filteredTps = filterTps();
+  const [search, setSearch] = useState<any>("")
+  const [currentPage, setCurrentPage] = useState<number>(1)
+  const [totalPage, setTotalPage] = useState<number>(0)
+  const [debounceSearch, setDebounceSearch] = useState<any>("")
 
   const confirmModal = (id: number) => modals.openConfirmModal({
     title: 'Hapus data TPS',
@@ -54,7 +48,7 @@ export default function TPSPage() {
     }
   } 
 
-  const rows = filteredTps.map((tps) => (
+  const rows = dataTps.map((tps) => (
     <TableTr key={tps.id_tps} >
       <TableTd>{tps.nama_tps}</TableTd>
       <TableTd>{tps.lokasi}</TableTd>
@@ -85,20 +79,40 @@ export default function TPSPage() {
 
     </TableTr>
   ))
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [selectedKec, search])
+  
   // Gunakan useEffect untuk mengambil data hanya sekali saat komponen dimuat
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true)
+      const filter = {
+        kec: selectedKec === SEMUA_KECAMATAN ? "" : selectedKec,
+        query: search
+      }
       try {
-        const tps = await fetchTpsData();
-        setDataTps(tps);
+        const res = await fetchTpsData(currentPage, filter);
+        setDataTps(res.tps);
+        setTotalPage(res.totalPage)
         setIsLoading(false)
       } catch (error) {
         console.error('Error fetching TPS data:', error);
       }
     };
     fetchData(); // Memanggil fetchData hanya sekali saat mount
-  }, []); // Dependency kosong, hanya dijalankan sekali saat komponen mount
+  }, [currentPage, selectedKec, debounceSearch]); // Dependency kosong, hanya dijalankan sekali saat komponen mount
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setDebounceSearch(search); // Update debouncedNamaSaksi setelah delay
+    }, 1500); // Debounce 2000
+
+    return () => {
+      clearTimeout(timeoutId); // Bersihkan timeout jika namaSaksi berubah sebelum timeout selesai
+    };
+  }, [search]); 
 
   return (
     <>
@@ -117,6 +131,8 @@ export default function TPSPage() {
               onChange={(val) => setSelectedKec(val)}
               data={[SEMUA_KECAMATAN, ...kecamatan.map((kec) => kec.kecamatan)]}
             />
+            <Space h={"xl"} />
+            <TextInput label="Pencarian" placeholder="Pencarian" value={search} onChange={(e) => setSearch(e.target.value)} />
           </GridCol>
         </Grid>
         <Space h={'lg'} />
@@ -136,6 +152,8 @@ export default function TPSPage() {
                 <TableTbody>{rows}</TableTbody>
               </Table>
             </TableScrollContainer>
+            <Space h={'lg'} />
+            <Pagination value={currentPage} onChange={setCurrentPage} total={totalPage} />
           </GridCol>
         </Grid>
       </Box>

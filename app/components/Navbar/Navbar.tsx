@@ -3,7 +3,7 @@
 import { AppShell, Burger, Group, Image, ScrollArea } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { useState, useEffect } from 'react';
-import { IconHome2, IconLogout, IconUsers } from '@tabler/icons-react';
+import { IconGauge, IconHome2, IconLogout, IconUsers } from '@tabler/icons-react';
 import { signOut, useSession } from 'next-auth/react';
 import Cookies from 'js-cookie';
 import classes from './Navbar.module.css';
@@ -68,6 +68,12 @@ export function Navbar({ children }: { children: React.ReactNode }) {
 
       <AppShell.Navbar p="md">
         <AppShell.Section grow my="md" component={ScrollArea}>
+        <Link href={'/dashboard'} className={ `${classes.link} ${activeLink === '/dashboard'? classes.active : ''}`} >
+          <div>
+            <IconGauge className={classes.linkIcon} stroke={1.5} />
+            <span>Dashboard</span>
+          </div>
+        </Link>
           {isAdmin ? links : null}
         </AppShell.Section>
         {/* Hanya menampilkan tombol logout jika sudah login */}
