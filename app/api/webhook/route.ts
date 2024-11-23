@@ -82,22 +82,36 @@ const hitungCepat = async (senderData: any) => {
       suara_tidak_sah_bupati: true,      
     }
   })
-  const totalDpt = await prisma.tPS.aggregate({
+  const dpt = await prisma.tPS.aggregate({
     _sum: {
       total_dpt: true
     }
   })
-  const totalBupati = Number(perhitungan._sum.suara_bupati_1) + Number(perhitungan._sum.suara_bupati_2)
-  const totalSuara = Number(perhitungan._sum.suara_bupati_1) + Number(perhitungan._sum.suara_bupati_2) + Number(perhitungan._sum.suara_tidak_sah_bupati)
-  const presentse1 = ((Number(perhitungan._sum.suara_bupati_1) / totalBupati) * 100).toFixed(2) +'%'
-  const presentse2 = ((Number(perhitungan._sum.suara_bupati_2) / totalBupati) * 100).toFixed(2) +'%'
+  const totalBupati = Number(perhitungan._sum.suara_bupati_1) + Number(perhitungan._sum.suara_bupati_2);
+  const totalSuara = totalBupati + Number(perhitungan._sum.suara_tidak_sah_bupati);
+  const totalDpt = Number(dpt._sum.total_dpt);
+  
+  // Hindari pembagian dengan 0
+  const presentse1 = totalBupati > 0 
+    ? ((Number(perhitungan._sum.suara_bupati_1) / totalBupati) * 100).toFixed(2) + '%' 
+    : '0%';
+  
+  const presentse2 = totalBupati > 0 
+    ? ((Number(perhitungan._sum.suara_bupati_2) / totalBupati) * 100).toFixed(2) + '%' 
+    : '0%';
+  
+  const totalSuaraPresentase = totalDpt > 0 
+    ? ((totalSuara / totalDpt) * 100).toFixed(2) + '%' 
+    : '0%';
 
-  const message =`*Hasil terkini perhitungan suara*
-  Paslon 1: ${perhitungan._sum.suara_bupati_1} - (${presentse1})
-  Paslon 2: ${perhitungan._sum.suara_bupati_2} - (${presentse2})
-  Tidak Sah: ${perhitungan._sum.suara_tidak_sah_bupati}
-  Total DPT: ${totalDpt._sum.total_dpt}
-  Total Suara Masuk: ${totalSuara} - (${(totalSuara/Number(totalDpt._sum.total_dpt) * 100).toFixed(2)}%)`
+    const message = [
+      `*Hasil terkini perhitungan suara*`,
+      `Paslon 1: ${perhitungan._sum.suara_bupati_1} - (${presentse1})`,
+      `Paslon 2: ${perhitungan._sum.suara_bupati_2} - (${presentse2})`,
+      `Tidak Sah: ${perhitungan._sum.suara_tidak_sah_bupati}`,
+      `Total DPT: ${totalDpt}`,
+      `Total Suara Masuk: ${totalSuara} - (${totalSuaraPresentase})`
+    ].join('\n');
 
   await sendMessage({
     chatId: senderData.chatId,
