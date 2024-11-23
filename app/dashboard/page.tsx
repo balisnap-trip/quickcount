@@ -30,6 +30,7 @@ export default function Dashboard() {
     { paslon: `Paslon 2 - ${totalSuara.presentaseBupati2}`, Suara: Number(totalSuara.suara_bupati_2) },
   ];
 
+  const totalSuaraMasuk = Number(totalSuara.suara_bupati_1) + Number(totalSuara.suara_bupati_2) + Number(totalSuara.suara_tidak_sah_bupati)
   return (
     <>
       <Box pos="relative">
@@ -50,6 +51,7 @@ export default function Dashboard() {
               <GridCol span={{ lg: 6, md: 12, sm: 12 }}>
                 <Center h={300} >
                   <Image
+                    alt="bupati"
                     style={{ padding: "10px" }}
                     radius="md"
                     h={300}
@@ -91,25 +93,25 @@ export default function Dashboard() {
                     Total Suara Calon Bupati Paslon 2:
                     <span style={{ color: "green", fontWeight: "bold" }}> {totalSuara.suara_bupati_2} Suara</span>
                   </Text>
-                  <Text fz="h6" mt="md" mb="md" ta="start">
+                  {/* <Text fz="h6" mt="md" mb="md" ta="start">
                     Total Suara Calon Gubernur Paslon 1:
                     <span style={{ color: "green", fontWeight: "bold" }}> {totalSuara.suara_gubernur_1} Suara</span>
                   </Text>
                   <Text fz="h6" mt="md" mb="md" ta="start">
                     Total Suara Calon Gubernur Paslon 2:
                     <span style={{ color: "green", fontWeight: "bold" }}> {totalSuara.suara_gubernur_2} Suara</span>
-                  </Text>
+                  </Text> */}
                   <Text fz="h6" mt="md" mb="md" ta="start">
                     Total Suara Tidak Sah Bupati:
                     <span style={{ color: "red", fontWeight: "bold" }}> {totalSuara.suara_tidak_sah_bupati} Suara</span>
                   </Text>
-                  <Text fz="h6" mt="md" mb="md" ta="start">
+                  {/* <Text fz="h6" mt="md" mb="md" ta="start">
                     Total Suara Tidak Sah Gubernur:
                     <span style={{ color: "red", fontWeight: "bold" }}> {totalSuara.suara_tidak_sah_gubernur} Suara</span>
-                  </Text>
+                  </Text> */}
                   <Text fz="h6" mt="md" mb="md" ta="start">
                     Total Suara Masuk:
-                    <span style={{ color: "blue", fontWeight: "bold" }}> {totalSuara.total_suara_masuk} Suara</span>
+                    <span style={{ color: "blue", fontWeight: "bold" }}> {totalSuaraMasuk} Suara</span>
                   </Text>
                 </Box>
               </GridCol>

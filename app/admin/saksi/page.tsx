@@ -3,7 +3,7 @@ import { Grid, Select, GridCol, TableTr, TableTd, Table, TableTbody, TableThead,
 import React, { useEffect, useState } from "react";
 import { kecamatan } from "../../lib/masterData";
 import { useMediaQuery } from "@mantine/hooks";
-import { IconCheck, IconEdit, IconMail, IconX } from "@tabler/icons-react";
+import { IconCheck, IconEdit, IconMail, IconSearch, IconX } from "@tabler/icons-react";
 import { modals } from '@mantine/modals'
 import { useRouter } from "next/navigation";
 import { aktivasiToken, deleteSaksi, fetchDataSaksi, kirimToken, perbaikanData } from "../../lib/crud/saksi";
@@ -23,7 +23,6 @@ export default function SaksiPage() {
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [totalPage, setTotalPage] = useState<number>(0)
   const [namaSaksi, setNamaSaksi] = useState<any>("")
-  const [debouncedNamaSaksi, setDebouncedNamaSaksi] = useState<any>("")
   const [tokenDoUpdate, setTokenDoUpdate] = useState<boolean>(false)
 
   const confirmModal = (id: number) => modals.openConfirmModal({
@@ -54,6 +53,7 @@ export default function SaksiPage() {
       <TableTd>{index + 1}</TableTd>
       <TableTd>{saksi.nama_saksi}</TableTd>
       <TableTd>{saksi.nomor_wa}</TableTd>
+      <TableTd>{saksi.nik}</TableTd>
       <TableTd>
         <Switch
           size="md"
@@ -93,7 +93,7 @@ export default function SaksiPage() {
           <Button
             size="compact-md"
             disabled={!saksi.nomor_wa || !saksi.token}
-            onClick={() => kirimToken(saksi.id_saksi)}
+            onClick={() => handleKirimToken(saksi.id_saksi)}
             color="blue"
             leftSection={
               <IconMail size={14} />
@@ -118,39 +118,31 @@ export default function SaksiPage() {
     </TableTr>
   ))
 
+  const fetchData = async () => {
+    setIsLoading(true)
+    const filter = {
+      kec: selectedKec === SEMUA_KECAMATAN ? "" : selectedKec,
+      namaSaksi
+    }
+    try {
+      const res = await fetchDataSaksi(currentPage, filter);
+      setDataSaksi(res.saksi);
+      setTotalPage(res.totalPage)
+      setIsLoading(false)
+    } catch (error) {
+      console.error('Gagal memuat saksi:', error);
+    }
+  };
+
   useEffect(() => {
     setCurrentPage(1)
   }, [selectedKec, namaSaksi])
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setDebouncedNamaSaksi(namaSaksi); // Update debouncedNamaSaksi setelah delay
-    }, 1500); // Debounce 2000
-
-    return () => {
-      clearTimeout(timeoutId); // Bersihkan timeout jika namaSaksi berubah sebelum timeout selesai
-    };
-  }, [namaSaksi]);
 
   // Gunakan useEffect untuk mengambil data hanya sekali saat komponen dimuat
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true)
-      const filter = {
-        kec: selectedKec === SEMUA_KECAMATAN ? "" : selectedKec,
-        namaSaksi
-      }
-      try {
-        const res = await fetchDataSaksi(currentPage, filter);
-        setDataSaksi(res.saksi);
-        setTotalPage(res.totalPage)
-        setIsLoading(false)
-      } catch (error) {
-        console.error('Gagal memuat saksi:', error);
-      }
-    };
     fetchData(); // Memanggil fetchData hanya sekali saat mount
-  }, [currentPage, selectedKec, debouncedNamaSaksi, tokenDoUpdate]); // Dependency kosong, hanya dijalankan sekali saat komponen mount
+  }, [currentPage, selectedKec, tokenDoUpdate]); // Dependency kosong, hanya dijalankan sekali saat komponen mount
 
   const handleAktivasiToken = async (flag: boolean, id: number | null = null) => {
     try {
@@ -192,13 +184,24 @@ export default function SaksiPage() {
               data={[SEMUA_KECAMATAN, ...kecamatan.map((kec) => kec.kecamatan)]}
             />
             <Space h={'lg'} />
-            <TextInput
-              name="nama_saksi"
-              placeholder="Masukkan nama saksi"
-              label="Cari nama saksi"
-              value={namaSaksi}
-              onChange={(e) => setNamaSaksi(e.target.value)}
-            />
+            <Group align="flex-end" >
+              <TextInput
+                name="nama_saksi"
+                placeholder="Masukkan nama saksi"
+                label="Cari nama saksi"
+                value={namaSaksi}
+                onChange={(e) => setNamaSaksi(e.target.value)}
+                style={{ flex: 1 }}
+              />
+             <Button
+                size="compact-md"
+                leftSection={<IconSearch size={14} />}
+                variant="outline"
+                onClick={() => fetchData()}
+              >
+                Cari
+              </Button>
+            </Group>
           </GridCol>
         </Grid>
         <Space h={'lg'} />
@@ -223,7 +226,7 @@ export default function SaksiPage() {
                 variant="outline">
                 Nonaktifkan Token
               </Button>
-              <Button
+              {/* <Button
                 size="compact-md"
                 onClick={() => handleKirimToken()}
                 color="blue"
@@ -232,7 +235,7 @@ export default function SaksiPage() {
                 }
                 variant="outline">
                 Kirim Token
-              </Button>
+              </Button> */}
             </Group>
             <Space h={"lg"} />
 
@@ -243,6 +246,7 @@ export default function SaksiPage() {
                     <TableTh>No</TableTh>
                     <TableTh>Nama Saksi</TableTh>
                     <TableTh>Nomor WA</TableTh>
+                    <TableTh>NIK</TableTh>
                     <TableTh>Status Token</TableTh>
                     <TableTh>Status Input</TableTh>
                     <TableTh>TPS</TableTh>

@@ -89,6 +89,15 @@ export default function SaksiDetail() {
               label="Nomor WA"
               placeholder="Masukkan nomor WA"
               error={dataSaksi.nomor_wa ? "" : "Nomor WA harus diisi"}
+            />
+            <Space h={'lg'} />
+             <TextInput 
+              name="nik" 
+              value={dataSaksi.nik} 
+              onChange={handleFieldChange} 
+              label="NIK"
+              placeholder="Masukkan NIK"
+              type="number"
             />      
             <Space h={'lg'} />
             <Button 

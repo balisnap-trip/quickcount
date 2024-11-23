@@ -13,7 +13,7 @@ export const GET = async (req: NextRequest) => {
         suara_gubernur_2: true,
         suara_tidak_sah_bupati: true,
         suara_tidak_sah_gubernur: true,
-        total_suara_masuk: true
+        // total_suara_masuk: true
       },
     });
 

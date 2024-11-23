@@ -26,7 +26,6 @@ export default function LoginPage() {
 
     setLoading(false);
 
-    console.log(res)
 
     if (res?.error) {
       setError('Invalid username or password');
