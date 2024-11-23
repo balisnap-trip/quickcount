@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     } else if(messageData.typeMessage === "textMessage"){
       message = messageData.textMessageData.textMessage
     }
-    const nikPattern = /\b(NIK\s*:\s*\d{16})\b/i.test(message)
+    const nikPattern = /\b(NIK\s+\d{16})\b/i.test(message)
 
     if(message.toLowerCase() === "token"){
       await checkToken(senderData)
@@ -26,7 +26,6 @@ export async function POST(req: NextRequest) {
       await hitungCepat(senderData)
     } else if(nikPattern){
       const nik = message.match(/\d{16}/)?.[0]
-      console.log(nik)
       if(nik) { 
         await updateNIK(senderData, nik)
       }
