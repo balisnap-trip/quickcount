@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
         data: {
           token: flag ? generateToken() : null
         }
-       })
+      })
     } else {
       const saksi = await prisma.saksi.findMany({
         where: {
@@ -26,48 +26,18 @@ export async function POST(req: NextRequest) {
         }
       })
 
-      for(const item of saksi){
-        await prisma.saksi.update({
-          where:{
-            id_saksi: item.id_saksi
-          },
-          data: {
-            token: flag ? generateToken() : null
-          }
-        })
-      }
+      const tokens = saksi.map(() => flag ? generateToken() : null);
+
+      // Step 2: Perform parallel updates
+      await Promise.all(
+        saksi.map((item, index) =>
+          prisma.saksi.update({
+            where: { id_saksi: item.id_saksi },
+            data: { token: tokens[index] },
+          })
+        )
+      );
     }
-
-    // Remove token untuk wa null
-    await prisma.saksi.updateMany({
-      where: {
-        nomor_wa: null
-      },
-      data: {
-        token: null
-      }
-    })
-
-    const test = await prisma.saksi.updateMany({
-      where: {
-       OR: [
-        {
-          nomor_wa: {
-            equals: ""
-          }
-        },
-        {
-          nomor_wa: {
-            equals: null
-          }
-        }
-       ]
-      },
-      data: {
-        token: null
-      }
-    })
-    console.log(test)
     return NextResponse.json("ok", { status: 200 })
   } catch (error) {
     console.log(error)
