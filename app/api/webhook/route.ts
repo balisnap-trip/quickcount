@@ -46,7 +46,7 @@ const checkToken = async (senderData: any) => {
   const saksi = await getSaksi(senderData)
   let message
   if(!saksi){
-    message= "Anada tidak terdaftar pada sistem.\nHubungi admin untuk informasi lebih lanjut" 
+    message= "Anda tidak terdaftar pada sistem.\nHubungi admin untuk informasi lebih lanjut" 
   } else if(saksi.status_input){
     message = `Saksi: ${saksi.nama_saksi}\nAnda sudah melakukan input data.\nUntuk melakukan input data kembali, silahkan hubungi admin`
   } else {
