@@ -8,11 +8,11 @@ import { IconInfoCircle, IconPhoto } from "@tabler/icons-react";
 type InputDataProps = {
   suaraBupati1: any;
   suaraBupati2: any;
-  suaraGubernur1: any;
-  suaraGubernur2: any;
+  // suaraGubernur1: any;
+  // suaraGubernur2: any;
   suaraTidakSahBupati: any;
-  suaraTidakSahGubernur: any;
-  totalSuaraMasuk: any;
+  // suaraTidakSahGubernur: any;
+  // totalSuaraMasuk: any;
   fotoFormulirC1Bupati: any
   fotoFormulirC1Gubernur: any
 }
@@ -24,11 +24,11 @@ export default function InputData() {
   const [formData, setFormData] = useState<InputDataProps>({
     suaraBupati1: "",
     suaraBupati2: "",
-    suaraGubernur1: "",
-    suaraGubernur2: "",
+    // suaraGubernur1: "",
+    // suaraGubernur2: "",
     suaraTidakSahBupati: "",
-    suaraTidakSahGubernur: "",
-    totalSuaraMasuk: "",
+    // suaraTidakSahGubernur: "",
+    // totalSuaraMasuk: "",
     fotoFormulirC1Bupati: null,
     fotoFormulirC1Gubernur: null
   })
@@ -145,6 +145,7 @@ export default function InputData() {
                       type="number"
                       label="Jumlah Suara Calon Bupati Paslon 1"
                       placeholder="Masukkan Jumlah Suara Calon Bupati Paslon 1"
+                      error={formData.suaraBupati1 ? "" : "Wajib diisi" }
                     />
                     <Space h={10} />
                     <TextInput
@@ -154,7 +155,9 @@ export default function InputData() {
                       type="number"
                       label="Jumlah Suara Calon Bupati Paslon 2"
                       placeholder="Masukkan Jumlah Suara Calon Bupati Paslon 2"
+                      error={formData.suaraBupati2 ? "" : "Wajib diisi" }
                     />
+                    <Space h={10} />
                     <TextInput
                       value={formData.suaraTidakSahBupati}
                       onChange={(event) => handleInputChange("suaraTidakSahBupati", event)}
@@ -162,15 +165,17 @@ export default function InputData() {
                       type="number"
                       label="Jumlah Suara tidak Sah"
                       placeholder="Masukkan Jumlah Suara Tidak Sah"
+                      error={formData.suaraTidakSahBupati ? "" : "Wajib diisi" }
                     />
-                    <TextInput
+                    {/* <TextInput
                       name="total_suara_masuk"
                       type="number"
                       label="Jumlah Total Suara Masuk"
                       placeholder="Masukkan Jumlah Suara Masuk"
                       value={formData.totalSuaraMasuk}
                       onChange={(event) => handleInputChange("totalSuaraMasuk", event)}
-                    />
+                    /> */}
+                    <Space h={10} />
                     <FileInput
                       value={formData.fotoFormulirC1Bupati}
                       onChange={(file: File | null) => handleFileChange("fotoFormulirC1Bupati", file)}
@@ -181,9 +186,10 @@ export default function InputData() {
                       rightSectionPointerEvents="none"
                       accept="image/png,image/jpeg"
                       mt="md"
+                      error={formData.fotoFormulirC1Bupati ? "" : "Wajib diisi" }
                     />
                   </GridCol>
-                  <GridCol span={{ base: 12, md: 6, lg: 4 }}>
+                  {/* <GridCol span={{ base: 12, md: 6, lg: 4 }}>
                     <Text fz="h4" fw={"normal"} mt="lg" mb="lg" ta="start">
                       Calon Gubernur Bali
                     </Text>
@@ -223,11 +229,11 @@ export default function InputData() {
                       accept="image/png,image/jpeg"
                       mt="md"
                     />
-                  </GridCol>
+                  </GridCol> */}
                  
                 </Grid>
                 <Button type="submit" mt="md" onClick={handleSubmit}>
-                    Submit
+                    Simpan
                   </Button>
                   <Space h={40} />
               </>

@@ -5,7 +5,6 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 const BUCKET_NAME = 'quickcount'
 const PATH = 'gianyar'
 
-console.log(supabaseUrl, supabaseKey , "TEST")
 export const supabaseClient = createClient(supabaseUrl, supabaseKey)
 
 export const uploadFile = async (file: File) => {

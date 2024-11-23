@@ -3,7 +3,7 @@ import { Grid, Select, GridCol, TableTr, TableTd, Table, TableTbody, TableThead,
 import React, { useEffect, useState } from "react";
 import { kecamatan } from "../../lib/masterData";
 import { useMediaQuery } from "@mantine/hooks";
-import { IconEdit, IconX } from "@tabler/icons-react";
+import { IconEdit, IconSearch, IconX } from "@tabler/icons-react";
 import { modals } from '@mantine/modals'
 import { deleteTPS, fetchTpsData } from "../../lib/crud/tps";
 import { useRouter } from "next/navigation";
@@ -23,7 +23,6 @@ export default function TPSPage() {
   const [search, setSearch] = useState<any>("")
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [totalPage, setTotalPage] = useState<number>(0)
-  const [debounceSearch, setDebounceSearch] = useState<any>("")
 
   const confirmModal = (id: number) => modals.openConfirmModal({
     title: 'Hapus data TPS',
@@ -84,35 +83,26 @@ export default function TPSPage() {
     setCurrentPage(1)
   }, [selectedKec, search])
   
+  const fetchData = async () => {
+    setIsLoading(true)
+    const filter = {
+      kec: selectedKec === SEMUA_KECAMATAN ? "" : selectedKec,
+      query: search
+    }
+    try {
+      const res = await fetchTpsData(currentPage, filter);
+      setDataTps(res.tps);
+      setTotalPage(res.totalPage)
+      setIsLoading(false)
+    } catch (error) {
+      console.error('Error fetching TPS data:', error);
+    }
+  };
   // Gunakan useEffect untuk mengambil data hanya sekali saat komponen dimuat
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true)
-      const filter = {
-        kec: selectedKec === SEMUA_KECAMATAN ? "" : selectedKec,
-        query: search
-      }
-      try {
-        const res = await fetchTpsData(currentPage, filter);
-        setDataTps(res.tps);
-        setTotalPage(res.totalPage)
-        setIsLoading(false)
-      } catch (error) {
-        console.error('Error fetching TPS data:', error);
-      }
-    };
+    
     fetchData(); // Memanggil fetchData hanya sekali saat mount
-  }, [currentPage, selectedKec, debounceSearch]); // Dependency kosong, hanya dijalankan sekali saat komponen mount
-
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setDebounceSearch(search); // Update debouncedNamaSaksi setelah delay
-    }, 1500); // Debounce 2000
-
-    return () => {
-      clearTimeout(timeoutId); // Bersihkan timeout jika namaSaksi berubah sebelum timeout selesai
-    };
-  }, [search]); 
+  }, [currentPage, selectedKec]); // Dependency kosong, hanya dijalankan sekali saat komponen mount
 
   return (
     <>
@@ -132,7 +122,10 @@ export default function TPSPage() {
               data={[SEMUA_KECAMATAN, ...kecamatan.map((kec) => kec.kecamatan)]}
             />
             <Space h={"xl"} />
+            <Group align="flex-end">
             <TextInput label="Pencarian" placeholder="Pencarian" value={search} onChange={(e) => setSearch(e.target.value)} />
+            <Button variant="outline" onClick={() => fetchData()} leftSection={<IconSearch size={14} />}>Cari</Button>
+            </Group>
           </GridCol>
         </Grid>
         <Space h={'lg'} />

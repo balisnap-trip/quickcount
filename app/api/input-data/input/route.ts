@@ -8,23 +8,23 @@ export const POST = async (req: NextRequest) => {
     const formData = await req.formData();
     const body = Object.fromEntries(formData);
     const fotoFormulirC1Bupati = (body.fotoFormulirC1Bupati as File) || null;
-    const fotoFormulirC1Gubernur = (body.fotoFormulirC1Gubernur as File) || null;
+    // const fotoFormulirC1Gubernur = (body.fotoFormulirC1Gubernur as File) || null;
 
     const dataFileBupati = await uploadFile(fotoFormulirC1Bupati);
-    const dataFileGubernur = await uploadFile(fotoFormulirC1Gubernur);
+    // const dataFileGubernur = await uploadFile(fotoFormulirC1Gubernur);
 
-    if (dataFileBupati && dataFileGubernur) {
+    if (dataFileBupati) {
       const dataPerhitungan = await prisma.dataPerhitungan.create({
         data: {
           id_saksi: Number(body.idSaksi),
           id_tps: Number(body.idTps),
           suara_bupati_1: Number(body.suaraBupati1),
           suara_bupati_2: Number(body.suaraBupati2),
-          suara_gubernur_1: Number(body.suaraGubernur1),
-          suara_gubernur_2: Number(body.suaraGubernur2),
+          suara_gubernur_1: 0,
+          suara_gubernur_2: 0,
           suara_tidak_sah_bupati: Number(body.suaraTidakSahBupati),
-          suara_tidak_sah_gubernur: Number(body.suaraTidakSahGubernur),
-          total_suara_masuk: Number(body.totalSuaraMasuk),
+          suara_tidak_sah_gubernur: 0,
+          total_suara_masuk:0,
           tgl_input: new Date(),
         }
       })
@@ -35,10 +35,10 @@ export const POST = async (req: NextRequest) => {
               id_perhitungan: dataPerhitungan.id_perhitungan,
               file_path: dataFileBupati?.url.publicUrl as string,
             },
-            {
-              id_perhitungan: dataPerhitungan.id_perhitungan,
-              file_path: dataFileGubernur?.url.publicUrl as string,
-            }
+            // {
+            //   id_perhitungan: dataPerhitungan.id_perhitungan,
+            //   file_path: dataFileGubernur?.url.publicUrl as string,
+            // }
           ]
         })
 
