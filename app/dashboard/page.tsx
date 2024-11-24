@@ -41,24 +41,20 @@ export default function Dashboard() {
         <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
         
         {/* Header */}
-        <Box
-          style={{
-            backgroundImage: "url('https://via.placeholder.com/1500x500?text=Paslon+Bupati')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            height: 500,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            textAlign: "center",           
-          }}
-        >
+        <Box>
+          <Image            
+            alt="Header"
+            w="100%"
+            // h={500}
+            src={"header/header.jpg"}
+          />
+        </Box>
           <div
             style={{
               backgroundColor: "rgba(0, 0, 0, 0.5)",
               padding: "40px",
-              borderRadius: "5px",
+              textAlign: "center",
+              // borderRadius: "5px",
             }}
           >
             <Text c="white" fz="h1" fw={700} style={{ textShadow: "0px 2px 4px rgba(0, 0, 0, 0.6)" }}>
@@ -68,7 +64,6 @@ export default function Dashboard() {
               Versi Tim Pemenangan Paslon Kata
             </Title>
           </div>
-        </Box>
         
         {/* Perolehan Suara */}
         <Box maw={{ sm: '90vw', lg: '80vw' }} mx="auto" px={20}>
