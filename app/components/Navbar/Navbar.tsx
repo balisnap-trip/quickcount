@@ -3,7 +3,7 @@
 import { AppShell, Burger, Group, Image, ScrollArea } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { useState, useEffect } from 'react';
-import { IconGauge, IconHome2, IconLogout, IconUsers } from '@tabler/icons-react';
+import { IconCalculator, IconGauge, IconHome2, IconLogout, IconUsers } from '@tabler/icons-react';
 import { signOut, useSession } from 'next-auth/react';
 import Cookies from 'js-cookie';
 import classes from './Navbar.module.css';
@@ -35,6 +35,7 @@ export function Navbar({ children }: { children: React.ReactNode }) {
   const adminLinks = [
     { label: 'TPS', link: '/admin/tps', icon: IconHome2 },
     { label: 'Saksi', link: '/admin/saksi', icon: IconUsers },
+    { label: 'Perhitungan Suara', link: '/admin/perhitungan-suara', icon: IconCalculator },
   ];
 
   const links = adminLinks.map((item) => (
