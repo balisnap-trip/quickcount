@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`${process.env.NEXT_PUBLIC_URL}`} />
-        <meta property="og:image" content={`${process.env.NEXT_PUBLIC_URL}/paslon/bupati.png`} />
+        <meta property="og:image" content={`${process.env.NEXT_PUBLIC_URL}/header/header.jpg`} />
         <meta property="og:locale" content="id_ID" />
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no" />
         <link rel="icon" href="/favicon.ico" />
