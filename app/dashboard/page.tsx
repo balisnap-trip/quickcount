@@ -58,10 +58,10 @@ export default function Dashboard() {
             }}
           >
             <Text c="white" fz="h1" fw={700} style={{ textShadow: "0px 2px 4px rgba(0, 0, 0, 0.6)" }}>
-              Hasil Hitung Cepat 2024
+              Hitung Cepat Pilkada Gianyar 2024
             </Text>
             <Title order={2} c="white" mt={20}>
-              Versi Tim Pemenangan Paslon Kata
+              Berdasarkan Dokumen C1 masing-masing TPS se-Kabupaten Gianyar
             </Title>
           </div>
         
@@ -209,27 +209,53 @@ export default function Dashboard() {
                       {suaraKecamatan &&
                         Object.entries(suaraKecamatan).map(([key, value], index) => {
                           const suaraValue = value as { suara_bupati_1: number; suara_bupati_2: number; persen_bupati_1?: string; persen_bupati_2?: string };
+                          const bg1 =  suaraValue.suara_bupati_1 && suaraValue.suara_bupati_2
+                            ? suaraValue.suara_bupati_1 > suaraValue.suara_bupati_2
+                              ? "green.2"
+                              : "red.2"
+                            : undefined
+                          const bg2 = suaraValue.suara_bupati_1 && suaraValue.suara_bupati_2
+                            ? suaraValue.suara_bupati_1 < suaraValue.suara_bupati_2
+                              ? "green.2"
+                              : "red.2"
+                            : undefined
                           return (
                             <TableTr key={index}>
                               <TableTd style={{ fontWeight: 'bold' }}>{key}</TableTd>
-                              <TableTd>
-                                <Text style={{ textAlign: "center", color: 'blue', fontWeight: 'bold' }}>
+                          
+                              {/* Suara Bupati 1 */}
+                              <TableTd
+                                bg={bg1}
+                              >
+                                <Text style={{ textAlign: "center", fontWeight: 'bold' }}>
                                   {!suaraValue.suara_bupati_1 ? "" : <NumberFormatter thousandSeparator value={suaraValue.suara_bupati_1} />}
                                 </Text>
                               </TableTd>
-                              <TableTd style={{ textAlign: "center" }}>
+                          
+                              <TableTd  
+                                bg={bg1}
+                                style={{ textAlign: "center" }}>
                                 {suaraValue.persen_bupati_1 || "0%"}
                               </TableTd>
-                              <TableTd>
-                                <Text style={{ textAlign: "center", color: 'blue', fontWeight: 'bold' }}>
+                          
+                              {/* Suara Bupati 2 */}
+                              <TableTd
+                                bg={bg2}
+                              >
+                                <Text style={{ textAlign: "center", fontWeight: 'bold' }}>
                                   {!suaraValue.suara_bupati_2 ? "" : <NumberFormatter thousandSeparator value={suaraValue.suara_bupati_2} />}
                                 </Text>
                               </TableTd>
-                              <TableTd style={{ textAlign: "center" }}>
+                          
+                              <TableTd 
+                                style={{ textAlign: "center" }}
+                                bg={bg2}
+                              >
                                 {suaraValue.persen_bupati_2 || "0%"}
                               </TableTd>
                             </TableTr>
                           );
+                          
                         })}
                     </TableTbody>
                   </Table>
