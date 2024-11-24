@@ -38,6 +38,7 @@ export const GET = async (req: NextRequest) => {
       },
     });
   
+    console.log(dataPerhitungan)
     // Kelompokkan suara berdasarkan kecamatan
     const suaraPerKecamatan: GroupedData = dataPerhitungan.reduce((acc, item) => {
       const kecamatan = item.tps.kecamatan;
@@ -57,6 +58,8 @@ export const GET = async (req: NextRequest) => {
       acc[kecamatan].suara_tidak_sah_bupati += item.suara_tidak_sah_bupati;
       return acc;
     }, {} as GroupedData); 
+
+    console.log(suaraPerKecamatan)
 
     const totalDPT = await prisma.tPS.aggregate({
       _sum: {
@@ -88,42 +91,35 @@ export const GET = async (req: NextRequest) => {
 function hitungPersentaseSuara(suaraPerKecamatan: GroupedData): GroupedData {
   const mappedSuaraPerKecamatan: GroupedData = {};
 
-  // Iterasi untuk setiap kecamatan yang ada dalam daftar kecamatan
+  // Iterasi setiap kecamatan
   kecamatan.forEach((item) => {
-    const kecamatanName = item.kecamatan;
-    const key = kecamatanName.trim().toUpperCase(); // Pastikan key sudah diproses
+    const kecamatanName = item.kecamatan.trim().toUpperCase();
+    const matchingKey = Object.keys(suaraPerKecamatan).find((key) => 
+      key.replace(/^\d+\.\s*/, '').trim().toUpperCase() === kecamatanName
+    );
 
-    // Iterasi untuk setiap key pada suaraPerKecamatan
-    Object.keys(suaraPerKecamatan).forEach((kecamatanKey) => {
-      // Proses key untuk menghapus angka dan titik seperti '7. PAYANGAN' menjadi 'PAYANGAN'
-      const sanitizedKey = kecamatanKey.replace(/^\d+\.\s*/, '').toUpperCase();
+    if (matchingKey) {
+      // Jika kecamatan ditemukan, hitung persentase suara
+      const data = suaraPerKecamatan[matchingKey];
+      const totalSuaraSah = data.suara_bupati_1 + data.suara_bupati_2;
+      const persenBupati1 = totalSuaraSah > 0 ? (data.suara_bupati_1 / totalSuaraSah) * 100 : 0;
+      const persenBupati2 = totalSuaraSah > 0 ? (data.suara_bupati_2 / totalSuaraSah) * 100 : 0;
 
-      // Jika key yang sudah disanitasi cocok dengan nama kecamatan, maka hitung persentase
-      if(sanitizedKey === key) {
-        const data = suaraPerKecamatan[kecamatanKey]
-         // Hitung total suara sah
-         const totalSuaraSah = data.suara_bupati_1 + data.suara_bupati_2;
-
-         // Menghindari pembagian dengan 0, dan pastikan persentase dihitung dengan benar
-         const persenBupati1 = totalSuaraSah > 0 ? (data.suara_bupati_1 / totalSuaraSah) * 100 : 0;
-         const persenBupati2 = totalSuaraSah > 0 ? (data.suara_bupati_2 / totalSuaraSah) * 100 : 0;
- 
-         // Menambahkan data beserta persentase ke dalam objek mappedSuaraPerKecamatan
-         mappedSuaraPerKecamatan[key] = {
-           ...data,
-           persen_bupati_1: `${persenBupati1.toFixed(2)}%`,
-           persen_bupati_2: `${persenBupati2.toFixed(2)}%`,
-         };
-      } else {
-        mappedSuaraPerKecamatan[key] = {
-          suara_bupati_1: 0,
-          suara_bupati_2: 0,
-          suara_tidak_sah_bupati: 0,
-          persen_bupati_1: '0%',
-          persen_bupati_2: '0%',
-        };
-      }
-    });
+      mappedSuaraPerKecamatan[kecamatanName] = {
+        ...data,
+        persen_bupati_1: `${persenBupati1.toFixed(2)}%`,
+        persen_bupati_2: `${persenBupati2.toFixed(2)}%`,
+      };
+    } else {
+      // Jika kecamatan tidak ditemukan, tambahkan nilai default
+      mappedSuaraPerKecamatan[kecamatanName] = {
+        suara_bupati_1: 0,
+        suara_bupati_2: 0,
+        suara_tidak_sah_bupati: 0,
+        persen_bupati_1: '0%',
+        persen_bupati_2: '0%',
+      };
+    }
   });
 
   return mappedSuaraPerKecamatan;

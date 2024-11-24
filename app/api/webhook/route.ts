@@ -29,10 +29,11 @@ export async function POST(req: NextRequest) {
       if(nik) { 
         await updateNIK(senderData, nik)
       }
+    } else if(message.toLowerCase() === "verifikasi") {
+      await requestVerifikasi(senderData)
     } else {
       return NextResponse.json("ok", { status: 200 })
     }
-
     return NextResponse.json("ok", { status: 200 })
   } catch (error) {
     return NextResponse.json({ error: 'Gagal memuat data' }, { status: 500 })
@@ -59,7 +60,7 @@ const checkToken = async (senderData: any) => {
       }
     })
  
-    const url = `${process.env.NEXTAUTH_URL}/input-data/${token}`
+    const url = `${process.env.NEXT_PUBLIC_URL}/input-data/${token}`
     message = `Saksi: ${saksi.nama_saksi}\nBerikut adalah url untuk input data sistem quickcount: ${url}`
   }
  
@@ -152,6 +153,24 @@ const updateNIK = async (senderData: any, nik: string) => {
   } catch (error) {
     return NextResponse.json({ error: 'Gagal memuat data' }, { status: 500 })
   }
+}
+
+const requestVerifikasi = async (senderData: any) => {
+  const saksi = await getSaksi(senderData)
+  let message
+  if(!saksi){
+    message= "Anda tidak terdaftar pada sistem.\nHubungi admin untuk informasi lebih lanjut" 
+  } else {
+    message = [
+      `Saksi : [${saksi.nama_saksi}] [${saksi.saksiTPS[0].tps.nama_tps}] [${saksi.saksiTPS[0].tps.desa}] [${saksi.saksiTPS[0].tps.kecamatan}]\n`,
+      `*Berikut adalah url untuk verifikasi data diri anda*`,
+      `${process.env.NEXT_PUBLIC_URL}/verifikasi`,
+    ].join('\n');
+  }
+  await sendMessage({
+    chatId: senderData.chatId,
+    message
+  })
 }
 
 const getWaNo = (chatId: any) => {

@@ -1,34 +1,27 @@
 "use client"
-import { Box, Button, Grid, GridCol, Group, LoadingOverlay, Space, TextInput } from "@mantine/core";
+import { Alert, Box, Button, Grid, GridCol, LoadingOverlay, Space, TextInput } from "@mantine/core";
 import React, { useEffect, useState } from "react";
 import { useMediaQuery } from "@mantine/hooks";
-import {  IconCheck, IconSearch } from "@tabler/icons-react";
+import {  IconCheck, IconInfoCircle, IconSearch } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { searchNoWa } from "../lib/verifikasi/verifikasi";
 import { updateSaksi } from "../lib/crud/saksi";
 
-const SEMUA_KECAMATAN = "SEMUA KECAMATAN"
-
-const handleEditSaksi = (id: number) => {
-  window.location.href = `/admin/saksi/edit/${id}`
-}
 
 export default function VerifikasiPage() {
-  const [selectedKec, setSelectedKec] = useState<string | null>(SEMUA_KECAMATAN);
   const [dataSaksi, setDataSaksi] = useState<any>({});
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const isLg = useMediaQuery('(min-width: 1200px)');
   const router = useRouter()
-  const [currentPage, setCurrentPage] = useState<number>(1)
-  const [totalPage, setTotalPage] = useState<number>(0)
   const [nomorWa, setNomorWa] = useState<any>("")
-  const [tokenDoUpdate, setTokenDoUpdate] = useState<boolean>(false)
   const [errors, setErrors] = useState<any>({})
   const [formData, setFormData] = useState<any>({
     nama_saksi: "",
     nik: "",
     nomor_wa: "",
   });
+
+  const [saksiNotFound, setSaksiNotFound] = useState<boolean>(false)
+
   const handleCariNomorWa = async () => {
     setIsLoading(true)
     try {
@@ -38,9 +31,11 @@ export default function VerifikasiPage() {
         setErrors({})
         const res = await searchNoWa(nomorWa)
         setDataSaksi(res)
+        setSaksiNotFound(false)
       }
       
     } catch (error) {
+      setSaksiNotFound(true)
       console.log("Gagal memuat data saksi")
     } finally {
       setIsLoading(false)
@@ -93,7 +88,7 @@ export default function VerifikasiPage() {
       <Box pos="relative">
         <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
         <Grid justify="start">
-          <GridCol span={{ base: 12, md: 6, lg: 4 }}>
+          <GridCol span={{ base: 12, md: 6, lg: 4 }}>            
             {Object.keys(dataSaksi).length < 1 ? (
               <>
                 <TextInput
@@ -114,7 +109,13 @@ export default function VerifikasiPage() {
                   onClick={handleCariNomorWa}
                 >
                   Cari
-                </Button> 
+                </Button>
+                <Space h={"md"} />
+                {saksiNotFound && (
+                  <Alert variant="light" color="red" title="Data tidak ditemukan" icon={<IconInfoCircle />}>
+                    Data sakisi tidak ditemukan. Pastikan nomor WhatsApp yang Anda masukkan benar.
+                  </Alert>
+                )}
               </>
             ) : (
               <>
