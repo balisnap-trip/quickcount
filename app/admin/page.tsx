@@ -6,7 +6,7 @@ import { useEffect } from "react"
 export default function AdminPage() {
   const router = useRouter()
   useEffect(() => {
-    router.push('/dashboard')
+    router.push('/admin/tps')
   }, [router])
   return null
 }

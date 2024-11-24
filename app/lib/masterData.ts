@@ -4,5 +4,6 @@ export const kecamatan = [
   { kecamatan: 'TAMPAKSIRING' },
   { kecamatan: 'SUKAWATI' },
   { kecamatan: 'GIANYAR' },
-  { kecamatan: 'BLAHBATUH' }
+  { kecamatan: 'BLAHBATUH' },
+  { kecamatan: 'PAYANGAN' },
 ]

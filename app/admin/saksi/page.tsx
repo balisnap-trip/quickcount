@@ -206,7 +206,7 @@ export default function SaksiPage() {
         </Grid>
         <Space h={'lg'} />
         <Grid justify="start">
-          <GridCol span={{ base: 12, md: 12, lg: 10 }}>
+          <GridCol >
             <Group>
               <Button
                 size="compact-md"

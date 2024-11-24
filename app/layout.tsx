@@ -8,8 +8,12 @@ import { ModalsProvider } from '@mantine/modals';
 import { SessionProvider } from 'next-auth/react';
 import { Navbar } from './components';
 import { theme } from '../theme';
+import { usePathname } from 'next/navigation';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const excludePath = ['/auth/admin/login', '/dashboard']
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -33,7 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SessionProvider>
           <MantineProvider withGlobalClasses withCssVariables withStaticClasses theme={theme}>
             <ModalsProvider>
-              <Navbar>{children}</Navbar>
+              {excludePath.includes(pathname) ? <> {children} </>: <Navbar>{children}</Navbar>}              
             </ModalsProvider>
           </MantineProvider>
         </SessionProvider>
