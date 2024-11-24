@@ -71,10 +71,7 @@ const checkToken = async (senderData: any) => {
 }
 
 const hitungCepat = async (senderData: any) => {
-  const saksi = await getSaksi(senderData)
-  if(!saksi){
-    return NextResponse.json({ error: 'Saksi tidak ditemukan' }, { status: 404 })
-  }
+  
   const perhitungan = await prisma.dataPerhitungan.aggregate({
     _sum: {
       suara_bupati_1: true,
@@ -104,7 +101,10 @@ const hitungCepat = async (senderData: any) => {
     ? ((totalSuara / totalDpt) * 100).toFixed(2) + '%' 
     : '0%';
 
-    const message = [
+  const saksi = await getSaksi(senderData)
+  let message
+  if(!saksi){
+    message = [
       `*Hasil terkini perhitungan suara*`,
       `Paslon 1: ${perhitungan._sum.suara_bupati_1} - (${presentse1})`,
       `Paslon 2: ${perhitungan._sum.suara_bupati_2} - (${presentse2})`,
@@ -112,6 +112,17 @@ const hitungCepat = async (senderData: any) => {
       `Total DPT: ${totalDpt}`,
       `Total Suara Masuk: ${totalSuara} - (${totalSuaraPresentase})`
     ].join('\n');
+  } else {
+    message = [
+      `Saksi ${saksi.nama_saksi} TPS ${saksi.saksiTPS[0].tps.nama_tps} ${saksi.saksiTPS[0].tps.desa} ${saksi.saksiTPS[0].tps.kecamatan}`,
+      `*Hasil terkini perhitungan suara*`,
+      `Paslon 1: ${perhitungan._sum.suara_bupati_1} - (${presentse1})`,
+      `Paslon 2: ${perhitungan._sum.suara_bupati_2} - (${presentse2})`,
+      `Tidak Sah: ${perhitungan._sum.suara_tidak_sah_bupati}`,
+      `Total DPT: ${totalDpt}`,
+      `Total Suara Masuk: ${totalSuara} - (${totalSuaraPresentase})`
+    ].join('\n');
+  }
 
   await sendMessage({
     chatId: senderData.chatId,
@@ -153,6 +164,13 @@ const getSaksi = async (senderData: any) => {
   const saksi = await prisma.saksi.findFirst({
     where: {
       nomor_wa: waNo
+    },
+    include: {
+      saksiTPS: {
+        include: {
+          tps: true
+        }
+      }
     }
   })
   return saksi

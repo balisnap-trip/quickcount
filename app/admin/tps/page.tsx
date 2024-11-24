@@ -130,7 +130,7 @@ export default function TPSPage() {
         </Grid>
         <Space h={'lg'} />
         <Grid justify="start">
-          <GridCol span={{ base: 12, md: 12, lg: 8 }}>
+          <GridCol >
             <TableScrollContainer minWidth={isLg ? '75%' : '100%'} type="native">
               <Table>
                 <TableThead>
