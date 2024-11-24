@@ -71,7 +71,7 @@ export default function Dashboard() {
         </Box>
         
         {/* Perolehan Suara */}
-        <Box style={{ width: '100%', margin: '0 auto' }}>
+        <Box maw={{ sm: '90vw', lg: '80vw' }} mx="auto" px={20}>
           <Box mt="lg" pt={40}>
             <Title order={3} c="dark.7" fw={600}>
               Perolehan Suara
@@ -82,20 +82,30 @@ export default function Dashboard() {
               {/* Kolom Foto */}
               <Grid.Col span={{ base: 12, md: 6 }} order={{ base: 2, md: 1 }}>
                 <Center h={300}>
-                  <Box style={{ textAlign: 'center', width: '100%' }} p="md">
+                  <Box
+                    style={{
+                      textAlign: 'center',
+                      display: 'flex',           // Gunakan flexbox untuk penyusunan elemen
+                      justifyContent: 'center',  // Menjajarkan gambar secara horizontal
+                      alignItems: 'center',      // Menjajarkan gambar secara vertikal
+                      width: '100%',
+                      padding: 'md',
+                    }}
+                  >
                     <Image
                       alt="bupati"
                       radius="md"
                       fit="contain"
                       h={300}
                       w="auto"
-                      style={{ maxWidth: '100%' }} // memastikan gambar tidak melebihi lebar
+                      style={{
+                        maxWidth: '100%', // Pastikan gambar tidak melebihi lebar kontainer
+                      }}
                       src="paslon/bupati.png"
                     />
                   </Box>
                 </Center>
               </Grid.Col>
-
               {/* Kolom Chart */}
               <Grid.Col span={{ base: 12, md: 6 }} order={{ base: 1, md: 2 }}>
                 <Box
@@ -119,7 +129,7 @@ export default function Dashboard() {
                 </Box>
               </Grid.Col>
             </Grid>
-        </Box>
+          </Box>
 
 
           {/* Detail / Legend */}
