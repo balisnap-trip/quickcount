@@ -59,7 +59,7 @@ export default function SaksiDetail() {
       console.error('Update data saksi error:', error);
     }
     finally {
-      router.back()
+      router.push(`/admin/saksi`)
     }
   }
 
