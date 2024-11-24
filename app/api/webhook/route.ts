@@ -114,7 +114,7 @@ const hitungCepat = async (senderData: any) => {
     ].join('\n');
   } else {
     message = [
-      `Saksi ${saksi.nama_saksi} TPS ${saksi.saksiTPS[0].tps.nama_tps} ${saksi.saksiTPS[0].tps.desa} ${saksi.saksiTPS[0].tps.kecamatan}\n`,
+      `Saksi : [${saksi.nama_saksi}] [${saksi.saksiTPS[0].tps.nama_tps}] [${saksi.saksiTPS[0].tps.desa}] [${saksi.saksiTPS[0].tps.kecamatan}]\n`,
       `*Hasil terkini perhitungan suara*`,
       `Paslon 1: ${perhitungan._sum.suara_bupati_1} - (${presentse1})`,
       `Paslon 2: ${perhitungan._sum.suara_bupati_2} - (${presentse2})`,
