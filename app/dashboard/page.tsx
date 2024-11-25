@@ -1,12 +1,31 @@
 "use client";
 import { BarChart } from "@mantine/charts";
-import { Box, Center, Grid, Image, LoadingOverlay, Space, Text, Title, Divider, Table, NumberFormatter, TableThead, TableTr, TableTh, TableTbody, TableTd } from "@mantine/core";
+import { Box, Center, Grid, Image, LoadingOverlay, Space, Text, Title, Divider, Table, NumberFormatter, TableThead, TableTr, TableTh, TableTbody, TableTd, Alert } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { dataSuara } from "../lib/dashboard";
+import { readAccess } from "../lib/access-control/access";
+import { IconInfoCircle } from "@tabler/icons-react";
+import { useSession } from "next-auth/react";
 
 export default function Dashboard() {
   const [totalSuara, setTotalSuara] = useState<any>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [config, setConfig] = useState<any>({})
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const { data: session } = useSession(); 
+
+
+  useEffect(() => {
+    // Jika session tersedia, artinya pengguna sudah login
+    if (session) {
+      setIsLoggedIn(true);
+      if((session.user as any).role === "admin") setIsAdmin(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, [session]); // Perbarui status login saat session berubah
 
   useEffect(() => {
     const fetchData = async () => {
@@ -21,7 +40,17 @@ export default function Dashboard() {
       }
     };
     fetchData();
+    fetchConfig()
   }, []);
+
+  const fetchConfig = async() => {
+    try {
+      const res = await readAccess()
+      setConfig(res)
+    } catch (error) {
+      console.log(error)
+    }
+  } 
 
   const chrtData = [
     { paslon: `Paslon 1 - ${totalSuara.presentaseBupati1 || "0%"}`, Suara: Number(totalSuara.suara_bupati_1 || 0) },
@@ -29,17 +58,18 @@ export default function Dashboard() {
   ];
 
 
-  console.log(totalSuara)
   const suaraKecamatan = totalSuara.totalSuaraPerKecamatan;
   const totalSuaraMasuk =
     Number(totalSuara.suara_bupati_1 || 0) +
     Number(totalSuara.suara_bupati_2 || 0);
 
-  return (
+    return (
     <>
       <Box pos="relative" pb={40}>
         <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
         
+       { config.accessEnabled && !isLoading || (isLoggedIn && isAdmin) ? (
+        <>
         {/* Header */}
         <Box>
           <Image            
@@ -125,8 +155,6 @@ export default function Dashboard() {
               </Grid.Col>
             </Grid>
           </Box>
-
-
           {/* Detail / Legend */}
           <Box mt="xl">
             <Title order={3} c="dark.7" fw={600}>
@@ -264,6 +292,17 @@ export default function Dashboard() {
             </Grid>
           </Box>
         </Box>
+        </>
+       ):(
+        <>
+          <Box style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+            <Alert variant="light" color="red" title="Akses terbatas" icon={<IconInfoCircle />}>
+              <Text fz={"h2"} fw={"bold"}>Akses ke halaman ini dibatasi. </Text>
+              <Text fz={"sm"}> Mohon coba lagi nanti</Text>
+            </Alert>
+          </Box>
+        </>
+       )}
       </Box>
     </>
   );
