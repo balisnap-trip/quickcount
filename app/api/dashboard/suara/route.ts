@@ -38,7 +38,6 @@ export const GET = async (req: NextRequest) => {
       },
     });
   
-    console.log(dataPerhitungan)
     // Kelompokkan suara berdasarkan kecamatan
     const suaraPerKecamatan: GroupedData = dataPerhitungan.reduce((acc, item) => {
       const kecamatan = item.tps.kecamatan;
@@ -59,7 +58,6 @@ export const GET = async (req: NextRequest) => {
       return acc;
     }, {} as GroupedData); 
 
-    console.log(suaraPerKecamatan)
 
     const totalDPT = await prisma.tPS.aggregate({
       _sum: {
@@ -77,7 +75,6 @@ export const GET = async (req: NextRequest) => {
       presentaseBupati2: ((Number(totalSuara._sum.suara_bupati_2) / totalSuaraBupatiValid) * 100).toFixed(2) + '%',
     } 
 
-    console.log(totalSuaraPerKecamatan)
     const data = {...totalSuara._sum, ...totalDPT._sum, ...presentaseBupati, totalSuaraPerKecamatan};
 
     return NextResponse.json(data, { status: 200 })
