@@ -1,5 +1,5 @@
 
-const apiUrl = '/api/admin/akses'
+const apiUrl = `${process.env.NEXT_PUBLIC_URL}/api/admin/akses`
 export const readAccess = async () => {
   try {
     const config = await fetch(`${apiUrl}`, {

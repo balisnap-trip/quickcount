@@ -26,7 +26,6 @@ export default function SaksiDetail() {
     fetchConfig();
   }, []); // Hanya eksekusi saat komponen pertama kali dimuat
 
-  console.log(config, "Config");
   // Fungsi untuk menangani perubahan akses publik
   const handlePublicAccessChange = async (event: any) => {
     setIsLoading(true); // Tampilkan loading saat proses perubahan
