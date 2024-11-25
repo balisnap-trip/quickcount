@@ -18,7 +18,7 @@ export const GET = async () => {
 
     const formattedDate = now.toISOString();
     const res = await fetch(`${publicUrl}?t=${formattedDate}`)
-    console.log(`${publicUrl}?t=${formattedDate}`)
+    
     const config = await res.json()
     return NextResponse.json(config, { status: 200 })
   } catch (error) {
