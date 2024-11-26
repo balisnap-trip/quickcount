@@ -59,7 +59,6 @@ export default function EditData() {
     }
   }, [token]);
 
-  console.log(formData)
   const handleInputChange = (name: string, event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     setFormData((prevFormData) => ({
@@ -103,37 +102,6 @@ export default function EditData() {
       setIsLoading(false);
     }
   }
-//   const handleSubmit = async () => {
-
-//     console.log(formData);
-//     try {
-//       setIsLoading(true);
-//       const data = new FormData();
-
-//       Object.entries(formData).forEach(([key, value]) => {
-//         if (value instanceof File) {
-//           data.append(key, value);
-//         }
-//         else {
-//           data.append(key, value);
-//         }
-//       })
-
-//       data.append("idSaksi", saksi.id_saksi);
-//       data.append("idTps", saksi.saksiTPS[0].tps.id_tps);
-
-//       const response = await inputData(data);
-
-//       if (response && response.status === "success") {
-//         router.push(`/input-data/${token}/sukses`)
-//       }
-
-//     } catch (error) {
-//       console.error(error);
-//     } finally {
-//       setIsLoading(false);
-//     }
-//   }
   return (
     <>
       <Box pos="relative">
@@ -190,7 +158,11 @@ export default function EditData() {
                       type="number"
                       label="Jumlah Suara Calon Bupati Paslon 1"
                       placeholder="Masukkan Jumlah Suara Calon Bupati Paslon 1"
-                      error={formData.suara_bupati_1 ? "" : "Wajib diisi" }
+                      error={
+                        formData.suara_bupati_1 === "" || Number(formData.suara_bupati_1) <= 0
+                          ? "Wajib diisi dan tidak boleh 0"
+                          : ""
+                      }
                       rightSection={
                         <CloseButton
                           aria-label="Clear input"
@@ -207,7 +179,11 @@ export default function EditData() {
                       type="number"
                       label="Jumlah Suara Calon Bupati Paslon 2"
                       placeholder="Masukkan Jumlah Suara Calon Bupati Paslon 2"
-                      error={formData.suara_bupati_2 ? "" : "Wajib diisi" }
+                      error={
+                        formData.suara_bupati_2 === "" || Number(formData.suara_bupati_2) <= 0
+                          ? "Wajib diisi dan tidak boleh 0"
+                          : ""
+                      }
                       rightSection={
                         <CloseButton
                           aria-label="Clear input"
@@ -224,7 +200,11 @@ export default function EditData() {
                       type="number"
                       label="Jumlah Suara tidak Sah"
                       placeholder="Masukkan Jumlah Suara Tidak Sah"
-                      error={formData.suara_tidak_sah_bupati ? "" : "Wajib diisi" }
+                      error={
+                        formData.suara_tidak_sah_bupati === "" || Number(formData.suara_tidak_sah_bupati) <= 0
+                          ? "Wajib diisi dan tidak boleh 0"
+                          : ""
+                      }
                       rightSection={
                         <CloseButton
                           aria-label="Clear input"
