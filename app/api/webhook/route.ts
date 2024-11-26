@@ -8,8 +8,9 @@ import { readAccess } from '../../lib/access-control/access'
 const prisma = new PrismaClient()
 
 export async function POST(req: NextRequest) {
-  const { messageData, senderData } = await req.json()
+  const { messageData, senderData, instanceData } = await req.json()
   try {
+    const { idInstance } = instanceData
     if(!messageData || !senderData){
       return NextResponse.json({ error: 'Gagal memuat data' }, { status: 500 })
     }
@@ -22,16 +23,16 @@ export async function POST(req: NextRequest) {
     const nikPattern = /\b(NIK\s+\d{16})\b/i.test(message)
 
     if(message.toLowerCase() === "token"){
-      await checkToken(senderData)
+      await checkToken(senderData, idInstance)
     } else if(message.toLowerCase() === "info"){
-      await hitungCepat(senderData)
+      await hitungCepat(senderData, idInstance)
     } else if(nikPattern){
       const nik = message.match(/\d{16}/)?.[0]
       if(nik) { 
-        await updateNIK(senderData, nik)
+        await updateNIK(senderData, nik, idInstance)
       }
     } else if(message.toLowerCase() === "verifikasi") {
-      await requestVerifikasi(senderData)
+      await requestVerifikasi(senderData, idInstance)
     } else {
       return NextResponse.json("ok", { status: 200 })
     }
@@ -43,7 +44,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-const checkToken = async (senderData: any) => {
+const checkToken = async (senderData: any, idInstance: number) => {
   const saksi = await getSaksi(senderData)
   let message
   if(!saksi){
@@ -69,10 +70,10 @@ const checkToken = async (senderData: any) => {
     chatId: senderData.chatId,
     message
   }
-  await sendMessage(messagePayload)
+  await sendMessage(messagePayload , idInstance)
 }
 
-const hitungCepat = async (senderData: any) => {
+const hitungCepat = async (senderData: any, idInstance: number) => {
   const checkAkses = await readAccess()
   if(!checkAkses.accessEnabled){
     const message = [
@@ -139,11 +140,11 @@ const hitungCepat = async (senderData: any) => {
     await sendMessage({
       chatId: senderData.chatId,
       message
-    })
+    }, idInstance)
   }
 }
 
-const updateNIK = async (senderData: any, nik: string) => {
+const updateNIK = async (senderData: any, nik: string, idInstance: number) => {
   const saksi = await getSaksi(senderData)
   if(!saksi){
     return NextResponse.json({ error: 'Saksi tidak ditemukan' }, { status: 404 })
@@ -161,13 +162,13 @@ const updateNIK = async (senderData: any, nik: string) => {
     await sendMessage({
       chatId: senderData.chatId,
       message
-    })
+    }, idInstance)
   } catch (error) {
     return NextResponse.json({ error: 'Gagal memuat data' }, { status: 500 })
   }
 }
 
-const requestVerifikasi = async (senderData: any) => {
+const requestVerifikasi = async (senderData: any, idInstance: number) => {
   const saksi = await getSaksi(senderData)
   let message
   if(!saksi){
@@ -182,7 +183,7 @@ const requestVerifikasi = async (senderData: any) => {
   await sendMessage({
     chatId: senderData.chatId,
     message
-  })
+  }, idInstance)
 }
 
 const getWaNo = (chatId: any) => {

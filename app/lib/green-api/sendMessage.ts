@@ -1,6 +1,8 @@
 
-export const sendMessage = async(messagePayload: any) => {
-  const apiUrl = `${process.env.GREENAPI_URL}/waInstance${process.env.GREENAPI_ID}/sendMessage/${process.env.GREENAPI_TOKEN}`
+export const sendMessage = async(messagePayload: any, idInstance: number | null = null) => {
+  const waInstance = idInstance ? idInstance : process.env.GREENAPI_INSTANCE
+  const token = idInstance ? process.env.GREENAPI_TOKEN_2 : process.env.GREENAPI_TOKEN
+  const apiUrl = `${process.env.GREENAPI_URL}/waInstance${waInstance}/sendMessage/${token}`
   
   const response = await fetch(apiUrl, {
     method: 'POST',
