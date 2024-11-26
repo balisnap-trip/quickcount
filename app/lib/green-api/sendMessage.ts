@@ -1,6 +1,6 @@
 
 export const sendMessage = async(messagePayload: any, idInstance: number | null = null) => {
-  const waInstance = idInstance ? idInstance : process.env.GREENAPI_INSTANCE
+  const waInstance = idInstance ? idInstance : process.env.GREENAPI_ID
   const token = idInstance ? process.env.GREENAPI_TOKEN_2 : process.env.GREENAPI_TOKEN
   const apiUrl = `${process.env.GREENAPI_URL}/waInstance${waInstance}/sendMessage/${token}`
   
