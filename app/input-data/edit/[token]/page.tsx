@@ -1,48 +1,47 @@
 "use client";
 import { useParams , useRouter} from "next/navigation";
 import { useEffect, useState } from "react";
-import { getUserByToken, inputData } from "../../lib/input-data/input";
-import { Alert, Box, Button, CloseButton, FileInput, Grid, GridCol, Image, LoadingOverlay, Space, Table, TableTbody, TableTd, TableTh, TableThead, TableTr, Text, TextInput } from "@mantine/core";
+import { Alert, Box, Button, CloseButton, FileInput, Grid, GridCol, Image, LoadingOverlay, Space, Text, TextInput } from "@mantine/core";
 import { IconInfoCircle, IconPhoto } from "@tabler/icons-react";
+import { getStatusEdit, updateInput } from "../../../lib/input-data/input";
 
 type InputDataProps = {
-  suaraBupati1: any;
-  suaraBupati2: any;
+  suara_bupati_1: any;
+  suara_bupati_2: any;
   // suaraGubernur1: any;
   // suaraGubernur2: any;
-  suaraTidakSahBupati: any;
+  suara_tidak_sah_bupati: any;
   // suaraTidakSahGubernur: any;
   // totalSuaraMasuk: any;
-  fotoFormulirC1Bupati: any
+  buktiGambar: any
   // fotoFormulirC1Gubernur: any
 }
 
-export default function InputData() {
+export default function EditData() {
   const [saksi, setSaksi] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isTokenValid, setIsTokenValid] = useState<boolean | null>(null); // track token validation state
   const [formData, setFormData] = useState<InputDataProps>({
-    suaraBupati1: "",
-    suaraBupati2: "",
-    // suaraGubernur1: "",
-    // suaraGubernur2: "",
-    suaraTidakSahBupati: "",
-    // suaraTidakSahGubernur: "",
-    // totalSuaraMasuk: "",
-    fotoFormulirC1Bupati: null,
-    // fotoFormulirC1Gubernur: null
-  })
+    suara_bupati_1: "",
+    suara_bupati_2: "",   
+    suara_tidak_sah_bupati: "",
+ 
+    buktiGambar: null,
+   })
   const router = useRouter()
   const params = useParams();
   const { token } = params;
+
+  
 
   useEffect(() => {
     const fetchSaksi = async () => {
       try {
         setIsLoading(true);
-        const response = await getUserByToken(token as string);
+        const response = await getStatusEdit(token as string);
         if (response) {
           setSaksi(response);
+          setFormData(response.dataPerhitungan[0]);
           setIsTokenValid(true); // Token is valid
         } else {
           setIsTokenValid(false); // No data means invalid token
@@ -60,6 +59,7 @@ export default function InputData() {
     }
   }, [token]);
 
+  console.log(formData)
   const handleInputChange = (name: string, event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     setFormData((prevFormData) => ({
@@ -68,14 +68,12 @@ export default function InputData() {
     }));
   }
 
-  const inputFilled = formData.suaraBupati1 !== "" && formData.suaraBupati2 !== "" && formData.suaraTidakSahBupati !== "" && formData.fotoFormulirC1Bupati !== null;
+  const inputFilled = formData.suara_bupati_1 !== "" && formData.suara_bupati_2 !== "" && formData.suara_tidak_sah_bupati !== "" && formData.buktiGambar !== null;
   const handleFileChange = (name: string, file: File | null) => {
     setFormData((prev) => ({ ...prev, [name]: file }));
   };
 
-  const handleSubmit = async () => {
-
-    console.log(formData);
+  const handleUpdateInput = async () => {
     try {
       setIsLoading(true);
       const data = new FormData();
@@ -89,13 +87,14 @@ export default function InputData() {
         }
       })
 
+      data.append("id_perhitungan", saksi.dataPerhitungan[0].id_perhitungan);
       data.append("idSaksi", saksi.id_saksi);
       data.append("idTps", saksi.saksiTPS[0].tps.id_tps);
-
-      const response = await inputData(data);
+      data.append("id_gambar", saksi.dataPerhitungan[0].buktiGambar[0].id_gambar);
+      const response = await updateInput(data);
 
       if (response && response.status === "success") {
-        router.push(`/input-data/${token}/sukses`)
+        router.push(`/input-data/edit/${token}/sukses`)
       }
 
     } catch (error) {
@@ -104,6 +103,37 @@ export default function InputData() {
       setIsLoading(false);
     }
   }
+//   const handleSubmit = async () => {
+
+//     console.log(formData);
+//     try {
+//       setIsLoading(true);
+//       const data = new FormData();
+
+//       Object.entries(formData).forEach(([key, value]) => {
+//         if (value instanceof File) {
+//           data.append(key, value);
+//         }
+//         else {
+//           data.append(key, value);
+//         }
+//       })
+
+//       data.append("idSaksi", saksi.id_saksi);
+//       data.append("idTps", saksi.saksiTPS[0].tps.id_tps);
+
+//       const response = await inputData(data);
+
+//       if (response && response.status === "success") {
+//         router.push(`/input-data/${token}/sukses`)
+//       }
+
+//     } catch (error) {
+//       console.error(error);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   }
   return (
     <>
       <Box pos="relative">
@@ -138,65 +168,12 @@ export default function InputData() {
                     )}
                   </GridCol>
                 </Grid>
-                {saksi.status_input ? (
+                {saksi.status_input && saksi.status_edit ? (
                   <Grid justify="start" gutter={"md"}>
                     <GridCol>
                       <Text fz="h4" fw={"bold"} mt="lg" mb="lg" ta="start">
-                        Anda sudah melakukan input data. Untuk perbaikan data mohon menghubungi admin
+                        Anda sudah melakukan perbaikan data.
                       </Text>
-                    </GridCol>
-                    <GridCol span={{ base: 12, md: 6, lg: 4 }}>
-                      
-                      <Table striped highlightOnHover withTableBorder>
-                        <TableThead>
-                          <TableTr style={{ textAlign: "left"}}>
-                            <TableTh style={{ padding: "8px" }}>Data Suara</TableTh>
-                            <TableTh></TableTh>
-                          </TableTr>
-                        </TableThead>
-                        <TableTbody>
-                          <TableTr>
-                            <TableTd>Jumlah Suara Calon Bupati Paslon 1</TableTd>
-                            <TableTd>
-                              <Text style={{ fontWeight: 'bold' }}>
-                               {saksi.dataPerhitungan[0].suara_bupati_1}
-                              </Text>
-                            </TableTd>
-                          </TableTr>
-                          <TableTr>
-                            <TableTd>Jumlah Suara Calon Bupati Paslon 1</TableTd>
-                            <TableTd>
-                              <Text style={{ fontWeight: 'bold' }}>
-                               {saksi.dataPerhitungan[0].suara_bupati_2}
-                              </Text>
-                            </TableTd>
-                          </TableTr>
-                          <TableTr>
-                            <TableTd>Jumlah Suara Tidak Sah</TableTd>
-                            <TableTd>
-                              <Text style={{ fontWeight: 'bold' }}>
-                               {saksi.dataPerhitungan[0].suara_tidak_sah_bupati}
-                              </Text>
-                            </TableTd>
-                          </TableTr>                          
-                        </TableTbody>
-                      </Table>
-                      <Space h={20} />
-                      {saksi.dataPerhitungan[0] && saksi.dataPerhitungan[0].buktiGambar.length > 0 && (                    
-                       <div style={{ marginBottom: "10px", textAlign: "center" }}>
-                           {/* Label */}
-                           <Text ta={"start"} fz="sm" fw="bold" mb={5}>
-                            Foto Formulir C1 yang diunggah
-                           </Text>
-                           
-                           {/* Gambar Sebelumnya */}
-                           <Image
-                            src={saksi.dataPerhitungan[0].buktiGambar[0].file_path}
-                            alt="Gambar sebelumnya"
-                            style={{ maxWidth: "100%", maxHeight: "200px", borderRadius: "8px" }}
-                           />                          
-                       </div>                    
-                    )}
                     </GridCol>
                   </Grid>
                 ): (
@@ -207,52 +184,52 @@ export default function InputData() {
                       Calon Bupati Gianyar
                     </Text>
                     <TextInput
-                      value={formData.suaraBupati1}
-                      onChange={(event) => handleInputChange("suaraBupati1", event)}
+                      value={formData.suara_bupati_1}
+                      onChange={(event) => handleInputChange("suara_bupati_1", event)}
                       name="suara_bupati_1"
                       type="number"
                       label="Jumlah Suara Calon Bupati Paslon 1"
                       placeholder="Masukkan Jumlah Suara Calon Bupati Paslon 1"
-                      error={formData.suaraBupati1 ? "" : "Wajib diisi" }
+                      error={formData.suara_bupati_1 ? "" : "Wajib diisi" }
                       rightSection={
                         <CloseButton
                           aria-label="Clear input"
-                          onClick={() => setFormData((prev) => ({ ...prev, suaraBupati1: "" }))}
-                          style={{ display: formData.suaraBupati1 ? undefined : 'none' }}
+                          onClick={() => setFormData((prev) => ({ ...prev, suara_bupati_1: "" }))}
+                          style={{ display: formData.suara_bupati_1 ? undefined : 'none' }}
                         />
                       }
                     />
                     <Space h={10} />
                     <TextInput
-                      value={formData.suaraBupati2}
-                      onChange={(event) => handleInputChange("suaraBupati2", event)}
+                      value={formData.suara_bupati_2}
+                      onChange={(event) => handleInputChange("suara_bupati_2", event)}
                       name="suara_bupati_2"
                       type="number"
                       label="Jumlah Suara Calon Bupati Paslon 2"
                       placeholder="Masukkan Jumlah Suara Calon Bupati Paslon 2"
-                      error={formData.suaraBupati2 ? "" : "Wajib diisi" }
+                      error={formData.suara_bupati_2 ? "" : "Wajib diisi" }
                       rightSection={
                         <CloseButton
                           aria-label="Clear input"
-                          onClick={() => setFormData((prev) => ({ ...prev, suaraBupati2: "" }))}
-                          style={{ display: formData.suaraBupati2 ? undefined : 'none' }}
+                          onClick={() => setFormData((prev) => ({ ...prev, suara_bupati_2: "" }))}
+                          style={{ display: formData.suara_bupati_2 ? undefined : 'none' }}
                         />
                       }
                     />
                     <Space h={10} />
                     <TextInput
-                      value={formData.suaraTidakSahBupati}
-                      onChange={(event) => handleInputChange("suaraTidakSahBupati", event)}
+                      value={formData.suara_tidak_sah_bupati}
+                      onChange={(event) => handleInputChange("suara_tidak_sah_bupati", event)}
                       name="suara_tidak_sah_bupati"
                       type="number"
                       label="Jumlah Suara tidak Sah"
                       placeholder="Masukkan Jumlah Suara Tidak Sah"
-                      error={formData.suaraTidakSahBupati ? "" : "Wajib diisi" }
+                      error={formData.suara_tidak_sah_bupati ? "" : "Wajib diisi" }
                       rightSection={
                         <CloseButton
                           aria-label="Clear input"
-                          onClick={() => setFormData((prev) => ({ ...prev, suaraTidakSahBupati: "" }))}
-                          style={{ display: formData.suaraTidakSahBupati ? undefined : 'none' }}
+                          onClick={() => setFormData((prev) => ({ ...prev, suara_tidak_sah_bupati: "" }))}
+                          style={{ display: formData.suara_tidak_sah_bupati ? undefined : 'none' }}
                         />
                       }
                     />
@@ -265,27 +242,55 @@ export default function InputData() {
                       onChange={(event) => handleInputChange("totalSuaraMasuk", event)}
                     /> */}
                     <Space h={10} />
-                    <FileInput
-                      value={formData.fotoFormulirC1Bupati}
-                      onChange={(file: File | null) => handleFileChange("fotoFormulirC1Bupati", file)}
-                      name="formulir_c1_bupati"
-                      label="Foto Formulir C1 (JPG/PNG)"
-                      placeholder="Pilih Foto Formulir C1"
-                      accept="image/png,image/jpeg"
-                      mt="md"
-                      error={formData.fotoFormulirC1Bupati ? "" : "Wajib diisi"}
-                      rightSection={
-                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          {! formData.fotoFormulirC1Bupati &&<IconPhoto size={18} style={{ color: "gray" }} />}
-                          {formData.fotoFormulirC1Bupati && (
-                            <CloseButton
-                              aria-label="Clear input"
-                              onClick={() => handleFileChange("fotoFormulirC1Bupati", null)}
-                            />
-                          )}
-                        </div>
-                      }
-                    />
+                    {formData.buktiGambar && formData.buktiGambar.length > 0 && (                    
+                       <div style={{ marginBottom: "10px", textAlign: "center" }}>
+                           {/* Label */}
+                           <Text ta={"start"} fz="sm" fw="bold" mb={5}>
+                            Foto Formulir C1 yang diunggah
+                           </Text>
+                           
+                           {/* Gambar Sebelumnya */}
+                           <Image
+                            src={formData.buktiGambar[0].file_path}
+                            alt="Gambar sebelumnya"
+                            style={{ maxWidth: "100%", maxHeight: "200px", borderRadius: "8px" }}
+                           />
+                           
+                           {/* Tombol Hapus */}
+                           <Button
+                            mt={10}                           
+                            color="red"
+                            size="xs"
+                            onClick={() => handleFileChange("buktiGambar", null)} // Fungsi untuk menghapus gambar
+                            >
+                            Hapus Foto
+                           </Button>
+                       </div>                    
+                    )}
+
+                    { (formData.buktiGambar == null || formData.buktiGambar instanceof File) && (
+                        <FileInput
+                        value={formData.buktiGambar ? formData.buktiGambar : null}
+                        onChange={(file: File | null) => handleFileChange("buktiGambar", file)}
+                        name="formulir_c1_bupati"
+                        label="Foto Formulir C1 (JPG/PNG)"
+                        placeholder="Pilih Foto Formulir C1"
+                        accept="image/png,image/jpeg"
+                        mt="md"
+                        error={formData.buktiGambar ? "" : "Wajib diisi"}
+                        rightSection={
+                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            {!formData.buktiGambar && <IconPhoto size={18} style={{ color: "gray" }} />}
+                            {formData.buktiGambar && (
+                                <CloseButton
+                                aria-label="Clear input"
+                                onClick={() => handleFileChange("buktiGambar", null)}
+                                />
+                            )}
+                            </div>
+                        }
+                        />
+                    )}
                   </GridCol>
                   {/* <GridCol span={{ base: 12, md: 6, lg: 4 }}>
                     <Text fz="h4" fw={"normal"} mt="lg" mb="lg" ta="start">
@@ -328,9 +333,9 @@ export default function InputData() {
                       mt="md"
                     />
                   </GridCol> */}
-                 
+                 <Space h={10} />
                 </Grid>
-                  <Button type="submit" mt="md" onClick={handleSubmit} disabled={!inputFilled}>
+                  <Button type="submit" mt="md" onClick={handleUpdateInput} disabled={!inputFilled}>
                     Simpan
                   </Button>
                 <Space h={40} />

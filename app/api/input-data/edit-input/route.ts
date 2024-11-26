@@ -13,6 +13,12 @@ export async function POST(req: NextRequest) {
         AND: [
           {
             token
+          },
+          {
+            status_edit: false
+          },
+          {
+            status_input: true
           }
         ]
       },

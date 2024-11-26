@@ -46,8 +46,7 @@ export const POST = async (req: NextRequest) => {
           where: {
             id_saksi: Number(body.idSaksi),
           },
-          data: {
-            token: null,
+          data: {            
             status_input: true
           }
         })
