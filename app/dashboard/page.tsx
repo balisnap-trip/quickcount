@@ -99,9 +99,26 @@ export default function Dashboard() {
         {/* Perolehan Suara */}
         <Box maw={{ sm: '90vw', lg: '80vw' }} mx="auto" px={20}>
           <Box mt="lg" pt={40}>
+          <div>
             <Title order={3} c="dark.7" fw={600}>
-              Perolehan Suara Masuk Saat Ini <NumberFormatter value={totalSuaraMasuk} thousandSeparator style={{ fontWeight: 'bold', fontSize: '1.2em'}}/> <NumberFormatter value={presentaseTotal} prefix="(" suffix="%)" thousandSeparator style={{ fontWeight: 'bold', fontSize: '1.2em'}}/>
+              Perolehan Suara Masuk Saat Ini{" "}
+              <NumberFormatter 
+                value={totalSuaraMasuk} 
+                thousandSeparator 
+                style={{ fontWeight: 'bold', fontSize: '1.2em' }} 
+              />{" "}
+              <NumberFormatter 
+                value={presentaseTotal} 
+                prefix="(" 
+                suffix="%)" 
+                thousandSeparator 
+                style={{ fontWeight: 'bold', fontSize: '1.2em' }} 
+              />
             </Title>
+            <Text size="md" c="gray.6" mt="sm" style={{ fontStyle: "italic" }}>
+              Update terakhir: {totalSuara.formattedDate}
+            </Text>
+          </div>
             <Divider my="sm" />
 
             <Grid align="stretch" gutter="md">

@@ -65,7 +65,34 @@ export const GET = async (req: NextRequest) => {
       },
     });
 
+    const lastUpdatedData = await prisma.dataPerhitungan.findFirst({
+      orderBy: {
+        tgl_input: 'desc'
+      },
+      select: {
+        tgl_input: true
+      }
+    })
+
+    const date = new Date(lastUpdatedData?.tgl_input as Date);
+    const opt = {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "Asia/Makassar"
+    };
+    const formatter = new Intl.DateTimeFormat("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "Asia/Makassar"
+    });
     
+    const formattedDate = formatter.format(date)
     const totalSuaraPerKecamatan = hitungPersentaseSuara(suaraPerKecamatan);
 
     const totalSuaraBupatiValid = Number(totalSuara._sum.suara_bupati_1) + Number(totalSuara._sum.suara_bupati_2);
@@ -75,7 +102,7 @@ export const GET = async (req: NextRequest) => {
       presentaseBupati2: ((Number(totalSuara._sum.suara_bupati_2) / totalSuaraBupatiValid) * 100).toFixed(2) + '%',
     } 
 
-    const data = {...totalSuara._sum, ...totalDPT._sum, ...presentaseBupati, totalSuaraPerKecamatan};
+    const data = {...totalSuara._sum, ...totalDPT._sum, ...presentaseBupati, totalSuaraPerKecamatan, formattedDate};
 
     return NextResponse.json(data, { status: 200 })
   } catch (error) {

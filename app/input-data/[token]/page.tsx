@@ -75,7 +75,6 @@ export default function InputData() {
 
   const handleSubmit = async () => {
 
-    console.log(formData);
     try {
       setIsLoading(true);
       const data = new FormData();
@@ -213,7 +212,11 @@ export default function InputData() {
                       type="number"
                       label="Jumlah Suara Calon Bupati Paslon 1"
                       placeholder="Masukkan Jumlah Suara Calon Bupati Paslon 1"
-                      error={formData.suaraBupati1 ? "" : "Wajib diisi" }
+                      error={
+                        formData.suaraBupati1 === "" || Number(formData.suaraBupati1) <= 0
+                          ? "Wajib diisi dan tidak boleh 0"
+                          : ""
+                      }
                       rightSection={
                         <CloseButton
                           aria-label="Clear input"
@@ -230,7 +233,11 @@ export default function InputData() {
                       type="number"
                       label="Jumlah Suara Calon Bupati Paslon 2"
                       placeholder="Masukkan Jumlah Suara Calon Bupati Paslon 2"
-                      error={formData.suaraBupati2 ? "" : "Wajib diisi" }
+                      error={
+                        formData.suaraBupati2 === "" || Number(formData.suaraBupati2) <= 0
+                          ? "Wajib diisi dan tidak boleh 0"
+                          : ""
+                      }
                       rightSection={
                         <CloseButton
                           aria-label="Clear input"
@@ -247,7 +254,11 @@ export default function InputData() {
                       type="number"
                       label="Jumlah Suara tidak Sah"
                       placeholder="Masukkan Jumlah Suara Tidak Sah"
-                      error={formData.suaraTidakSahBupati ? "" : "Wajib diisi" }
+                      error={
+                        formData.suaraTidakSahBupati === "" || Number(formData.suaraTidakSahBupati) <= 0
+                          ? "Wajib diisi dan tidak boleh 0"
+                          : ""
+                      }
                       rightSection={
                         <CloseButton
                           aria-label="Clear input"
