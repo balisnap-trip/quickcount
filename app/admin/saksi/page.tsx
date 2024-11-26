@@ -14,6 +14,7 @@ const handleEditSaksi = (id: number) => {
   window.location.href = `/admin/saksi/edit/${id}`
 }
 
+
 export default function SaksiPage() {
   const [selectedKec, setSelectedKec] = useState<string | null>(SEMUA_KECAMATAN);
   const [dataSaksi, setDataSaksi] = useState<any[]>([]);
@@ -101,10 +102,10 @@ export default function SaksiPage() {
             variant="outline">
             Kirim Token
           </Button>
-          { saksi.status_input && (
+          { saksi.status_input && !saksi.status_edit && (
             <Button
               size="compact-md"
-              onClick={() => perbaikanData(saksi.id_saksi)}
+              onClick={() => handlePerbaikanData(saksi.id_saksi)}
               color="blue"
               leftSection={
                 <IconEdit size={14} />
@@ -162,6 +163,21 @@ export default function SaksiPage() {
       await kirimToken(id)
     } catch (error) {
       throw new Error('Gagal kirim token');
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handlePerbaikanData = async (id: number) => {
+    try {
+      setIsLoading(true)
+      const res = await perbaikanData(id)
+      if(res === "ok"){
+        setTokenDoUpdate(prev => !prev)
+        router.push('/admin/saksi')
+      }
+    } catch (error) {
+      throw new Error('Gagal perbaikan data');
     } finally {
       setIsLoading(false)
     }

@@ -25,9 +25,10 @@ export default function PerhitunganSuaraPage() {
   const [tokenDoUpdate, setTokenDoUpdate] = useState<boolean>(false)
   const [open, setOpen] = useState(false)
   const [dataDesa, setDataDesa] = useState<any[]>([])
+  const [openModal, setOpenModal] = useState<number | null>(null)
 
-  const handleImageClick = () => {
-    setOpen(true)
+  const handleImageClick = (id: number) => {
+    setOpenModal(id)
   }
 
   const rows = dataPerhitungan.map((perhitungan, index) => (
@@ -49,12 +50,12 @@ export default function PerhitunganSuaraPage() {
             fit="contain"
             radius="md"
             height={100}
-            onClick={handleImageClick}  // Trigger modal open when clicked
+            onClick={() => handleImageClick(perhitungan.id_perhitungan)}  // Trigger modal open when clicked
             style={{ cursor: 'zoom-in' }}  // Change cursor to pointer for better UX
           />
           <Modal
-            opened={open}
-            onClose={() => setOpen(false)}  // Close modal when clicked outside
+            opened={openModal === perhitungan.id_perhitungan}
+            onClose={() => setOpenModal(null)}  // Close modal when clicked outside
             title={"Bukti foto formulir " + perhitungan.saksi.nama_saksi + " " + perhitungan.tps.nama_tps + " - " + perhitungan.tps.desa + " " + perhitungan.tps.kecamatan}
             size="lg"  // You can adjust the size based on your preference
           >

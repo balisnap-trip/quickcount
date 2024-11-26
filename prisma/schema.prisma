@@ -34,6 +34,7 @@ model Saksi {
   token        String?       // Menjadikan token nullable
   nik          String?       // Nik nullable
   status_input Boolean       @default(false) // Set default untuk status_input menjadi false
+  status_edit  Boolean       @default(false)
   // Relasi dengan DataPerhitungan dan Saksi_TPS
   dataPerhitungan DataPerhitungan[] 
   saksiTPS       Saksi_TPS[]

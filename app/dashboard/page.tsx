@@ -63,6 +63,7 @@ export default function Dashboard() {
     Number(totalSuara.suara_bupati_1 || 0) +
     Number(totalSuara.suara_bupati_2 || 0);
 
+  const presentaseTotal = totalSuaraMasuk > 0 ? ((totalSuaraMasuk / totalSuara.total_dpt) * 100).toFixed(2) : 0;
     return (
     <>
       <Box pos="relative" pb={40}>
@@ -99,7 +100,7 @@ export default function Dashboard() {
         <Box maw={{ sm: '90vw', lg: '80vw' }} mx="auto" px={20}>
           <Box mt="lg" pt={40}>
             <Title order={3} c="dark.7" fw={600}>
-              Perolehan Suara
+              Perolehan Suara Masuk Saat Ini <NumberFormatter value={totalSuaraMasuk} thousandSeparator style={{ fontWeight: 'bold', fontSize: '1.2em'}}/> <NumberFormatter value={presentaseTotal} prefix="(" suffix="%)" thousandSeparator style={{ fontWeight: 'bold', fontSize: '1.2em'}}/>
             </Title>
             <Divider my="sm" />
 
