@@ -255,8 +255,8 @@ export default function InputData() {
                       label="Jumlah Suara tidak Sah"
                       placeholder="Masukkan Jumlah Suara Tidak Sah"
                       error={
-                        formData.suaraTidakSahBupati === "" || Number(formData.suaraTidakSahBupati) <= 0
-                          ? "Wajib diisi dan tidak boleh 0"
+                        formData.suaraTidakSahBupati === ""
+                          ? "Wajib diisi"
                           : ""
                       }
                       rightSection={
