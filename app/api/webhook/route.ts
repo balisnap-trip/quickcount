@@ -84,7 +84,7 @@ const hitungCepat = async (senderData: any, idInstance: number) => {
     await sendMessage({
       chatId: senderData.chatId,
       message
-    })
+    }, idInstance)
   } else {
     const perhitungan = await prisma.dataPerhitungan.aggregate({
       _sum: {
